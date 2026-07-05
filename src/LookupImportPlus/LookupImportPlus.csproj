@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- XrmToolBox 1.2025+ (host + XrmToolBoxPackage) requires .NET Framework 4.8.
+         The handoff named 4.6.2 as the historical floor; the current host has
+         raised it. 4.8 is in-place-compatible and the required target now. -->
+    <TargetFramework>net48</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>LookupImportPlus</RootNamespace>
+    <AssemblyName>LookupImportPlus</AssemblyName>
+    <!-- XrmToolBox discovers plugins whose file name ends with a known suffix
+         and loads them into its own AppDomain. Keep the assembly self-named. -->
+    <Product>LookupImportPlus</Product>
+    <Company>brunsforge</Company>
+    <Authors>brunsforge</Authors>
+    <Version>0.1.0</Version>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <!-- The XrmToolBox host already ships the Dataverse SDK + Extensibility
+         assemblies. Do not copy host-provided dependencies into our output;
+         only our own dll and non-host deps (e.g. ClosedXML) get deployed. -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Deterministic>true</Deterministic>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Brings in XrmToolBox.Extensibility + Microsoft Dataverse/CRM SDK core
+         assemblies. These are provided by the host at runtime. -->
+    <PackageReference Include="XrmToolBoxPackage" Version="1.2025.10.74" />
+    <!-- XrmToolBoxPackage 1.2025.10.74 bundles XrmToolBox.Extensibility built
+         against McTools.Xrm.Connection 1.2025.9.64, but its declared transitive
+         dependency resolves to 1.2025.7.63 -> CS1705. Pin the matching version. -->
+    <PackageReference Include="MscrmTools.Xrm.Connection" Version="1.2025.9.64" />
+    <!-- Excel round-trip (template + data export, hidden _LookupImportPlus sheet).
+         netstandard2.0 -> compatible with net462. Ships alongside our plugin. -->
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Required for MEF-based plugin discovery ([Export] attributes). -->
+    <Reference Include="System.ComponentModel.Composition" />
+  </ItemGroup>
+
+</Project>

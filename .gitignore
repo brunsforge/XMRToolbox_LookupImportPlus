@@ -1,0 +1,32 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+*.vsp
+*.vspx
+
+# NuGet
+*.nupkg
+packages/
+.nuget/
+
+# Rider / ReSharper
+.idea/
+_ReSharper*/
+*.DotSettings.user
+
+# OS
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# XrmToolBox local plugin deploy target (if used)
+deploy/

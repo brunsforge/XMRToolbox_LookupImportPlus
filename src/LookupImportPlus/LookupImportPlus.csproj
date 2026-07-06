@@ -9,12 +9,9 @@
     <LangVersion>latest</LangVersion>
     <RootNamespace>LookupImportPlus</RootNamespace>
     <AssemblyName>LookupImportPlus</AssemblyName>
-    <!-- XrmToolBox discovers plugins whose file name ends with a known suffix
-         and loads them into its own AppDomain. Keep the assembly self-named. -->
-    <Product>LookupImportPlus</Product>
-    <Company>brunsforge</Company>
-    <Authors>brunsforge</Authors>
-    <Version>0.1.0</Version>
+    <!-- Version / Authors / Company / Product come from Directory.Build.props
+         (single source of truth). The assembly version drives XrmToolBox update
+         detection, so bumping it there is what makes an update offer appear. -->
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <!-- The XrmToolBox host already ships the Dataverse SDK + Extensibility
          assemblies. Do not copy host-provided dependencies into our output;

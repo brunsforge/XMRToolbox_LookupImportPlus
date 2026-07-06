@@ -8,6 +8,14 @@ Portierung der Power-Apps-Code-App
 Dataverse-**SDK** (statt Web API). Maßgebliche Logik-Spezifikation bleibt der dortige
 Quellcode (`src/domain/*`, `src/services/*`).
 
+## Dokumentation
+
+- [docs/USAGE.md](docs/USAGE.md) — Bedienung, Screens, typischer Ablauf
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — Schichten & Transport-Mapping Code App → SDK
+- [docs/PUBLISHING.md](docs/PUBLISHING.md) — Veröffentlichen & Aktualisieren (nuget.org / Tool Store)
+- [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) — Build, Tests, Release
+- [CHANGELOG.md](CHANGELOG.md) — Änderungen je Version
+
 ## Kernregel
 
 Feste Matching-Reihenfolge, erster Treffer gewinnt:
@@ -70,19 +78,22 @@ dotnet restore
 dotnet build -c Release
 ```
 
-## Deployment / Paketierung
+Details, Tests und die net48-/Version-Pin-Hintergründe: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
-Es werden nur die **Nicht-Host-Assemblies** ausgeliefert (unser Plugin + ClosedXML-Closure
-+ net48-Polyfills); SDK, Extensibility und Newtonsoft.Json stellt der XrmToolBox-Host bereit.
+## Release & Deployment
+
+Ein Befehl setzt die Version (eine Quelle: `Directory.Build.props`), baut und erzeugt
+den Drop-in-Ordner **und** das Store-Paket:
 
 ```powershell
-# 1) Drop-in-Ordner + Zip erzeugen (deploy\Plugins + deploy\LookupImportPlus-<ver>.zip)
-build\package.ps1
-
-# 2) Optional: Store-Paket (.nupkg, Tag "XrmToolBox Plugin") für den Tool Store
-dotnet pack build\pack\LookupImportPlus.Pack.csproj -c Release -o deploy
-dotnet nuget push deploy\LookupImportPlus.<ver>.nupkg -s nuget.org -k <apikey>
+build\release.ps1 0.1.1
+# → deploy\Plugins\           (in %AppData%\MscrmTools\XrmToolBox\Plugins kopieren)
+# → deploy\LookupImportPlus-0.1.1.0.zip
+# → deploy\LookupImportPlus.0.1.1.nupkg   (Tag "XrmToolBox Plugin")
 ```
+
+Veröffentlichen/Aktualisieren über nuget.org (den Push machst du mit deinem API-Key):
+[docs/PUBLISHING.md](docs/PUBLISHING.md).
 
 **Manuelle Installation zum Testen:** den Inhalt von `deploy\Plugins\` nach
 `%AppData%\MscrmTools\XrmToolBox\Plugins` kopieren und XrmToolBox neu starten.

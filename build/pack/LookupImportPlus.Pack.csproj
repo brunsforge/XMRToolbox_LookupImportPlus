@@ -20,10 +20,8 @@
     <EnableDefaultItems>false</EnableDefaultItems>
     <NoWarn>NU5128</NoWarn>
 
+    <!-- Version / Authors / Company come from Directory.Build.props. -->
     <PackageId>LookupImportPlus</PackageId>
-    <Version>0.1.0</Version>
-    <Authors>brunsforge</Authors>
-    <Company>brunsforge</Company>
     <PackageProjectUrl>https://github.com/brunsforge/LookupImportPlus</PackageProjectUrl>
     <PackageTags>XrmToolBox Plugin Dataverse Excel Import Lookup</PackageTags>
     <Description>Auditierbarer Excel-Import in Dataverse, bei dem Lookups deterministisch aufgeloest oder an einen Menschen eskaliert werden - nie geraten. Feste Reihenfolge GUID -&gt; Business Key -&gt; Suchfeld, versionierte Konfigurationen, Round-Trip und Audit-Log.</Description>

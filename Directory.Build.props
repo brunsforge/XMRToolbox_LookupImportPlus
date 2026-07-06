@@ -1,0 +1,13 @@
+﻿<!--
+  Single source of truth for version + authorship, inherited by every project in
+  the repo (the plugin and the store-pack project). Bump the version here (or via
+  build\release.ps1) and both the assembly and the NuGet package pick it up.
+-->
+<Project>
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <Authors>brunsforge</Authors>
+    <Company>brunsforge</Company>
+    <Product>LookupImportPlus</Product>
+  </PropertyGroup>
+</Project>

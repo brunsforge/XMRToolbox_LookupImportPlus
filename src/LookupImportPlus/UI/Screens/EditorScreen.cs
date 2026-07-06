@@ -360,73 +360,7 @@ namespace LookupImportPlus.UI.Screens
                 return;
             }
             foreach (var lk in _config.Lookups)
-                _lookupCards.Controls.Add(BuildLookupCard(lk));
-        }
-
-        private Control BuildLookupCard(LookupConfig lk)
-        {
-            var card = UiTheme.Card();
-            card.Width = 720;
-            card.Height = 250;
-            card.AutoScroll = false;
-            int y = 6;
-
-            card.Controls.Add(new Label { Text = $"{lk.VisibleColumn} → {lk.LookupAttribute}", AutoSize = true, Font = UiTheme.Subheading, Location = new Point(8, y) }); y += 28;
-
-            card.Controls.Add(Lbl(I18n.T("ed.visibleColumn"), 8, y));
-            var visible = new TextBox { Text = lk.VisibleColumn, Width = 220, Location = new Point(180, y) };
-            visible.TextChanged += (s, e) => lk.VisibleColumn = visible.Text;
-            card.Controls.Add(visible); y += 28;
-
-            card.Controls.Add(Lbl(I18n.T("ed.guidColumn"), 8, y));
-            var guid = new TextBox { Text = lk.GuidColumn, Width = 220, Location = new Point(180, y) };
-            guid.TextChanged += (s, e) => lk.GuidColumn = guid.Text;
-            card.Controls.Add(guid); y += 28;
-
-            card.Controls.Add(Lbl(I18n.T("ed.bkColumnLabel"), 8, y));
-            var bk = new TextBox { Text = lk.BusinessKeyColumn, Width = 220, Location = new Point(180, y) };
-            bk.TextChanged += (s, e) => { lk.BusinessKeyColumn = bk.Text; lk.Strategy.UseBusinessKey = !string.IsNullOrEmpty(bk.Text); };
-            card.Controls.Add(bk); y += 28;
-
-            card.Controls.Add(Lbl(I18n.T("ed.conflictStrategy"), 8, y));
-            var strat = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 220, Location = new Point(180, y) };
-            strat.Items.AddRange(new object[] { ConflictStrategy.Escalate, ConflictStrategy.SkipRow, ConflictStrategy.FailRow });
-            strat.SelectedItem = lk.ConflictStrategy;
-            strat.SelectedIndexChanged += (s, e) => { if (strat.SelectedItem is ConflictStrategy cs) lk.ConflictStrategy = cs; };
-            card.Controls.Add(strat); y += 28;
-
-            card.Controls.Add(Lbl(I18n.T("ed.targetEntitiesLabel"), 8, y));
-            var targets = new CheckedListBox { Width = 220, Height = 60, Location = new Point(180, y), CheckOnClick = true };
-            var allTargets = LookupTargetsFor(lk);
-            foreach (var t in allTargets)
-            {
-                var idx = targets.Items.Add(t);
-                targets.SetItemChecked(idx, lk.TargetEntities.Contains(t));
-            }
-            targets.ItemCheck += (s, e) =>
-            {
-                var name = targets.Items[e.Index].ToString();
-                BeginInvoke((Action)(() =>
-                {
-                    lk.TargetEntities = targets.CheckedItems.Cast<object>().Select(o => o.ToString()).ToList();
-                }));
-            };
-            card.Controls.Add(targets); y += 66;
-
-            // Per-target search field (default target only, for brevity of the card).
-            card.Controls.Add(Lbl(I18n.T("ed.searchFieldLabel"), 8, y));
-            var searchField = new TextBox { Text = lk.SearchAttribute, Width = 220, Location = new Point(180, y) };
-            searchField.TextChanged += (s, e) => lk.SearchAttribute = searchField.Text;
-            card.Controls.Add(searchField);
-
-            return card;
-        }
-
-        private List<string> LookupTargetsFor(LookupConfig lk)
-        {
-            var attr = _entity?.Attributes.FirstOrDefault(a => a.LogicalName == lk.LookupAttribute);
-            var fromMeta = attr?.Lookup?.Targets.Select(t => t.LogicalName) ?? Enumerable.Empty<string>();
-            return fromMeta.Union(lk.TargetEntities).Distinct().ToList();
+                _lookupCards.Controls.Add(new LookupCardControl(Host, _entity, lk));
         }
 
         // ── shared ──────────────────────────────────────────────

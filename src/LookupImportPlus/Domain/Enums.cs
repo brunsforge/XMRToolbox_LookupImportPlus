@@ -124,7 +124,14 @@ namespace LookupImportPlus.Domain
         NotFound,
         Ambiguous,
         WrongTargetType,
-        Pending
+        Pending,
+
+        /// <summary>
+        /// No lookup value was provided at all (no GUID, business key or search
+        /// value). Non-blocking: the lookup is simply left unset. Distinct from
+        /// <see cref="NotFound"/>, which means a value was given but not matched.
+        /// </summary>
+        Empty
     }
 
     /// <summary>How a match was obtained, for audit/UI (import.ts).</summary>

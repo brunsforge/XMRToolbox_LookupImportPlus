@@ -70,10 +70,22 @@ dotnet restore
 dotnet build -c Release
 ```
 
-Die erzeugte `LookupImportPlus.dll` plus die **Nicht-Host-Abhängigkeiten**
-(`ClosedXML*.dll`, `DocumentFormat.OpenXml*.dll`, `ExcelNumberFormat.dll`,
-`SixLabors.Fonts.dll`, `RBush.dll`) in den XrmToolBox-`Plugins`-Ordner kopieren; SDK,
-Extensibility und Newtonsoft.Json stellt der Host bereit.
+## Deployment / Paketierung
+
+Es werden nur die **Nicht-Host-Assemblies** ausgeliefert (unser Plugin + ClosedXML-Closure
++ net48-Polyfills); SDK, Extensibility und Newtonsoft.Json stellt der XrmToolBox-Host bereit.
+
+```powershell
+# 1) Drop-in-Ordner + Zip erzeugen (deploy\Plugins + deploy\LookupImportPlus-<ver>.zip)
+build\package.ps1
+
+# 2) Optional: Store-Paket (.nupkg, Tag "XrmToolBox Plugin") für den Tool Store
+dotnet pack build\pack\LookupImportPlus.Pack.csproj -c Release -o deploy
+dotnet nuget push deploy\LookupImportPlus.<ver>.nupkg -s nuget.org -k <apikey>
+```
+
+**Manuelle Installation zum Testen:** den Inhalt von `deploy\Plugins\` nach
+`%AppData%\MscrmTools\XrmToolBox\Plugins` kopieren und XrmToolBox neu starten.
 
 ## Umsetzungsstand
 
@@ -93,8 +105,9 @@ Vollständig portiert und lauffähig:
   (GUID / Suchfeld / NotFound / Ambiguous), Dry Run, Commit via `ExecuteMultipleRequest`,
   und real geschriebene + gegengelesene `EntityReference`-Bindung. Alle 15 E2E-Tests grün.
 
-Hinweis: Eine leere Lookup-Spalte klassifiziert die Zeile als `LookupNotFound` (blockierend) —
-faithful zur Quelle (`LookupResolver.ts`: leerer Wert = notFound). Falls optionale Lookups
-nicht blockieren sollen, ist das eine bewusste Produktentscheidung.
+Verhalten leerer Lookups (bewusste Abweichung von der Quelle): Eine **komplett leere**
+Lookup-Spalte (kein GUID/Business Key/Suchwert) wird als nicht-blockierender Status `Empty`
+geführt — die Zeile bleibt schreibbar, der Lookup ungesetzt. Ein *gefüllter, aber nicht
+auffindbarer* Wert bleibt weiterhin `NotFound` (blockierend).
 
-Offen: Deployment-Paketierung (Store-Publish), optionaler Feinschliff der UI.
+Offen: optionaler UI-Feinschliff, Version-Bump-Automatik.

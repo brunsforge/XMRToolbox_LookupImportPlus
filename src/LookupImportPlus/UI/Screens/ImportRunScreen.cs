@@ -227,6 +227,7 @@ namespace LookupImportPlus.UI.Screens
                     case LookupResolutionStatus.Ambiguous: return $"{l.LookupAttribute}: {l.Candidates?.Count ?? 0} {I18n.T("run.candidates")}";
                     case LookupResolutionStatus.NotFound: return $"{l.LookupAttribute}: {I18n.T("run.noMatch")}";
                     case LookupResolutionStatus.WrongTargetType: return $"{l.LookupAttribute}: !";
+                    case LookupResolutionStatus.Empty: return $"{l.LookupAttribute}: —";
                     default: return $"{l.LookupAttribute}: …";
                 }
             }));

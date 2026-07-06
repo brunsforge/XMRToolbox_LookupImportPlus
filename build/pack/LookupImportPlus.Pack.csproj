@@ -1,0 +1,37 @@
+<!--
+  Produces the XrmToolBox Tool Store package (.nupkg).
+
+  It bundles the assemblies assembled by build\package.ps1 into deploy\Plugins
+  (our plugin + non-host dependency closure) under the package's Plugins folder,
+  and tags the package "XrmToolBox Plugin" so the store scanner lists it.
+
+  Usage:
+    build\package.ps1                                   # populate deploy\Plugins
+    dotnet pack build\pack\LookupImportPlus.Pack.csproj -c Release -o deploy
+    # → deploy\LookupImportPlus.<version>.nupkg
+    dotnet nuget push deploy\LookupImportPlus.<version>.nupkg -s nuget.org -k <key>
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IsPackable>true</IsPackable>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <NoWarn>NU5128</NoWarn>
+
+    <PackageId>LookupImportPlus</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>brunsforge</Authors>
+    <Company>brunsforge</Company>
+    <PackageProjectUrl>https://github.com/brunsforge/LookupImportPlus</PackageProjectUrl>
+    <PackageTags>XrmToolBox Plugin Dataverse Excel Import Lookup</PackageTags>
+    <Description>Auditierbarer Excel-Import in Dataverse, bei dem Lookups deterministisch aufgeloest oder an einen Menschen eskaliert werden - nie geraten. Feste Reihenfolge GUID -&gt; Business Key -&gt; Suchfeld, versionierte Konfigurationen, Round-Trip und Audit-Log.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Ship the non-host closure assembled by build\package.ps1. -->
+    <Content Include="..\..\deploy\Plugins\*.dll" PackagePath="Plugins" Pack="true" />
+  </ItemGroup>
+
+</Project>

@@ -340,13 +340,19 @@ namespace LookupImportPlus.Services
             return $"{lk.Id}|{string.Join("|", parts)}";
         }
 
-        /// <summary>Row status contributed by its lookups (excluding validation blocks).</summary>
+        /// <summary>
+        /// Row status contributed by its lookups (excluding validation blocks).
+        /// <see cref="LookupResolutionStatus.Empty"/> is non-blocking: it neither
+        /// resolves nor conflicts, so a row whose only lookups are empty is Ready.
+        /// </summary>
         public static RowStatus LookupRowStatus(List<LookupResolution> lookups)
         {
             if (lookups.Any(l => l.Status == LookupResolutionStatus.WrongTargetType)) return RowStatus.LookupWrongTargetType;
             if (lookups.Any(l => l.Status == LookupResolutionStatus.NotFound)) return RowStatus.LookupNotFound;
             if (lookups.Any(l => l.Status == LookupResolutionStatus.Ambiguous)) return RowStatus.LookupAmbiguous;
-            if (lookups.Count > 0 && lookups.All(l => l.Status == LookupResolutionStatus.Resolved)) return RowStatus.LookupResolved;
+            if (lookups.Any(l => l.Status == LookupResolutionStatus.Resolved)
+                && lookups.All(l => l.Status == LookupResolutionStatus.Resolved || l.Status == LookupResolutionStatus.Empty))
+                return RowStatus.LookupResolved;
             return RowStatus.Ready;
         }
 

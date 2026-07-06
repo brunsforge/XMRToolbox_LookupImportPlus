@@ -48,8 +48,18 @@ namespace LookupImportPlus.Services
             }
             var targets = pinned != null ? new List<string> { pinned } : lookup.TargetEntities;
 
-            // ── 1. GUID ──────────────────────────────────────────
             var guidText = lookup.GuidColumn != null ? ReadString(Get(row, lookup.GuidColumn)) : null;
+            var bkValue = lookup.BusinessKeyColumn != null ? ReadString(Get(row, lookup.BusinessKeyColumn)) : null;
+
+            // No value provided at all → leave the lookup unset (non-blocking),
+            // distinct from a provided-but-unmatched value (NotFound).
+            if (pinned == null && guidText == null && bkValue == null && res.SourceValue == null)
+            {
+                res.Status = LookupResolutionStatus.Empty;
+                return res;
+            }
+
+            // ── 1. GUID ──────────────────────────────────────────
             if (lookup.Strategy.UseGuidColumn && guidText != null && Guid.TryParse(guidText, out var guid))
             {
                 var byGuid = ResolveByGuid(lookup, guid, targets);
@@ -65,7 +75,6 @@ namespace LookupImportPlus.Services
             }
 
             // ── 2. Business key ──────────────────────────────────
-            var bkValue = lookup.BusinessKeyColumn != null ? ReadString(Get(row, lookup.BusinessKeyColumn)) : null;
             if (lookup.Strategy.UseBusinessKey && bkValue != null)
             {
                 var candidates = QueryCandidates(lookup, targets, target =>

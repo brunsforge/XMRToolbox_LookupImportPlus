@@ -88,7 +88,13 @@ Vollständig portiert und lauffähig:
 - **Verifiziert:** Plugin lädt in XrmToolBox (MEF-Metadaten, Control-Instanziierung);
   21 Kernlogik-Tests grün (Excel-Round-Trip, Manifest-Hash + Tamper, Condition-Compiler,
   JSON-Persistenz, Status-Klassifikation). Release-Build: 0 Warnungen, 0 Fehler.
+- **End-to-End gegen eine echte Dataverse-Org verifiziert** (ClientSecret): Metadaten inkl.
+  polymorpher Lookup-Targets + Navigation-Property-Enrichment, Resolver in allen Stufen
+  (GUID / Suchfeld / NotFound / Ambiguous), Dry Run, Commit via `ExecuteMultipleRequest`,
+  und real geschriebene + gegengelesene `EntityReference`-Bindung. Alle 15 E2E-Tests grün.
 
-Offen (benötigt eine Live-Dataverse-Verbindung zum End-to-End-Test): Resolver-/Commit-Pfade
-gegen echte Metadaten, Feinschliff des Lookup-Editors (per-Ziel-Bedingungseditor),
-Deployment-Paketierung.
+Hinweis: Eine leere Lookup-Spalte klassifiziert die Zeile als `LookupNotFound` (blockierend) —
+faithful zur Quelle (`LookupResolver.ts`: leerer Wert = notFound). Falls optionale Lookups
+nicht blockieren sollen, ist das eine bewusste Produktentscheidung.
+
+Offen: Deployment-Paketierung (Store-Publish), optionaler Feinschliff der UI.

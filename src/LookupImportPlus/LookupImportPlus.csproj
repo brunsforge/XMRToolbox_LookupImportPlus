@@ -33,8 +33,11 @@
          dependency resolves to 1.2025.7.63 -> CS1705. Pin the matching version. -->
     <PackageReference Include="MscrmTools.Xrm.Connection" Version="1.2025.9.64" />
     <!-- Excel round-trip (template + data export, hidden _LookupImportPlus sheet).
-         netstandard2.0 -> compatible with net462. Ships alongside our plugin. -->
+         netstandard2.0 -> compatible with net48. Ships alongside our plugin. -->
     <PackageReference Include="ClosedXML" Version="0.105.0" />
+    <!-- JSON for config/history persistence and the template manifest. Provided
+         by the XrmToolBox host at runtime; referenced here for compilation. -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>

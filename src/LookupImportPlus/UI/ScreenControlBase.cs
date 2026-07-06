@@ -3,9 +3,9 @@ using System.Windows.Forms;
 namespace LookupImportPlus.UI
 {
     /// <summary>
-    /// Base class for the screen UserControls hosted in the content panel.
-    /// Gives each screen access to the host (navigation + Dataverse service)
-    /// and a hook to (re)load its data when it becomes visible.
+    /// Base class for screen UserControls hosted in the content panel. Gives each
+    /// screen access to the host (navigation, container, background work) and a
+    /// hook to (re)load its data when it becomes visible.
     /// </summary>
     public abstract class ScreenControlBase : UserControl
     {
@@ -17,10 +17,7 @@ namespace LookupImportPlus.UI
             Dock = DockStyle.Fill;
         }
 
-        /// <summary>
-        /// Called by the shell each time the screen is shown. <paramref name="parameters"/>
-        /// is whatever was passed to <see cref="IScreenHost.Navigate"/>.
-        /// </summary>
+        /// <summary>Called by the shell each time the screen is shown.</summary>
         public virtual void OnActivated(object parameters)
         {
         }

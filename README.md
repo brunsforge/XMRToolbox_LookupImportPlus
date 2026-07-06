@@ -24,12 +24,34 @@ Feste Matching-Reihenfolge, erster Treffer gewinnt:
 ```
 LookupImportPlus.sln
 src/LookupImportPlus/
-  LookupImportPlus.csproj        SDK-style, net462, WinForms
+  LookupImportPlus.csproj        SDK-style, net48, WinForms
   Plugin.cs                      IXrmToolBoxPlugin-Factory (MEF-Export + Metadaten)
   LookupImportPlusControl.cs     PluginControlBase-Shell (Navigation + Content)
-  Domain/                        Source-of-Truth-Typen (Config, Enums, Conditions, Issues)
-  Services/                      MetadataService, LookupResolver (Kern)
-  UI/                            IScreenHost, ScreenControlBase, Screens/*
+  Data/
+    DataverseContext.cs          SDK-Seam über IOrganizationService (ersetzt DataverseClient)
+  Domain/                        Source-of-Truth-Typen (Config, Conditions, Metadata,
+                                 Import, Issues, Template, Enums) – 1:1 aus src/domain/*
+  Services/
+    MetadataService.cs           RetrieveEntity/AllEntities → normalisiert, Lookup-Targets
+    LookupResolver.cs            Feste Reihenfolge GUID → Business Key → Suchfeld (Kern)
+    ConditionCompiler.cs         ConditionGroup → ConditionExpression + Zeitanker + Audit
+    ImportRunner.cs              Dry Run · Konfliktentscheidung · Commit (ExecuteMultiple)
+    ConfigValidationService.cs   Schema-Drift-Preflight + Fingerprint
+    DataExportService.cs         Query + CRM-/Schema-Zeilen (inkl. Business-Key-Anreicherung)
+    ConfigBuilder.cs             Config aus Metadaten bauen (Editor)
+    ViewService.cs               Gespeicherte Views (savedqueries) + FetchXML-Spalten
+    PersistedStore.cs            JSON-Persistenz (Configs/Historie) statt localStorage
+    Json.cs                      Deterministische JSON-Settings (Manifest-Hash/Persistenz)
+    Excel/                       TemplateColumns · ManifestHash (djb2) ·
+                                 ExcelTemplateService/ExcelParserService (ClosedXML)
+  App/
+    I18n.cs                      DE/EN-Strings (Port von src/i18n.ts)
+    AppContainer.cs              Composition Root + Config/Historie/aktiver Lauf
+  UI/
+    IScreenHost.cs · ScreenControlBase.cs · UiTheme.cs · ConflictKey.cs
+    DataPreviewModal.cs          3.3 Daten-Vorschau (CRM-/Schema-Spalten)
+    Screens/                     Configs · Editor (4 Tabs) · ImportRun · Conflicts ·
+                                 Resolve · History
 ```
 
 ## Screens (1:1 zur Code App)
@@ -48,11 +70,25 @@ dotnet restore
 dotnet build -c Release
 ```
 
-Die erzeugte `LookupImportPlus.dll` (plus Nicht-Host-Abhängigkeiten wie ClosedXML) in
-den XrmToolBox-`Plugins`-Ordner kopieren; der Host stellt SDK/Extensibility bereit.
+Die erzeugte `LookupImportPlus.dll` plus die **Nicht-Host-Abhängigkeiten**
+(`ClosedXML*.dll`, `DocumentFormat.OpenXml*.dll`, `ExcelNumberFormat.dll`,
+`SixLabors.Fonts.dll`, `RBush.dll`) in den XrmToolBox-`Plugins`-Ordner kopieren; SDK,
+Extensibility und Newtonsoft.Json stellt der Host bereit.
 
 ## Umsetzungsstand
 
-Gerüst steht (Plugin lädt, Navigation + Screen-Platzhalter, Domain-Modell,
-MetadataService funktional, LookupResolver als dokumentiertes Skelett). Reihenfolge
-für den Ausbau siehe §7 des Handoffs.
+Vollständig portiert und lauffähig:
+
+- **Domain** 1:1 aus `src/domain/*` (Config, Conditions, Metadata, Import, Issues, Template).
+- **Services** portiert: MetadataService, LookupResolver (feste Reihenfolge, nie geraten),
+  ConditionCompiler (→ QueryExpression + Zeitanker), ImportRunner (Dry Run, Konflikt-
+  entscheidung, Commit via `ExecuteMultipleRequest`), ConfigValidationService (Schema-Drift),
+  DataExportService, ExcelTemplate/Parser (ClosedXML), ViewService, PersistedStore.
+- **UI** alle sechs Screens + Daten-Vorschau-Modal, Statuskacheln/-farben, DE/EN.
+- **Verifiziert:** Plugin lädt in XrmToolBox (MEF-Metadaten, Control-Instanziierung);
+  21 Kernlogik-Tests grün (Excel-Round-Trip, Manifest-Hash + Tamper, Condition-Compiler,
+  JSON-Persistenz, Status-Klassifikation). Release-Build: 0 Warnungen, 0 Fehler.
+
+Offen (benötigt eine Live-Dataverse-Verbindung zum End-to-End-Test): Resolver-/Commit-Pfade
+gegen echte Metadaten, Feinschliff des Lookup-Editors (per-Ziel-Bedingungseditor),
+Deployment-Paketierung.

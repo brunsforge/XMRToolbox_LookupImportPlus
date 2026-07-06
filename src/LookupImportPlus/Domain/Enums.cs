@@ -1,57 +1,192 @@
 namespace LookupImportPlus.Domain
 {
-    /// <summary>How a target row is written. Port of the Code App's operation type.</summary>
-    public enum ImportOperation
+    // Enums are serialized as their C# member names (StringEnumConverter). The
+    // string values below mirror src/domain/* where practical; since the plugin
+    // reads back only its own persisted data, exact casing parity with the TS
+    // app is not required.
+
+    /// <summary>What the import does with each incoming row (config.ts OperationType).</summary>
+    public enum OperationType
     {
         Create,
         Update,
-        CreateOrUpdate
+        CreateOrUpdate,
+        UpsertAlternateKey
     }
 
-    /// <summary>
-    /// Default write mode of a job (src/domain/config.ts).
-    /// strict = nothing is written until every row resolves;
-    /// partial = clean rows are committed immediately.
-    /// </summary>
-    public enum WriteMode
+    /// <summary>How a single Excel column maps to a Dataverse attribute (config.ts).</summary>
+    public enum ColumnUsage
+    {
+        ImportExport,
+        ExportOnly,
+        ImportOnly,
+        Technical
+    }
+
+    /// <summary>How multiple candidates for a lookup are handled (config.ts).</summary>
+    public enum ConflictStrategy
+    {
+        Escalate,
+        SkipRow,
+        FailRow
+    }
+
+    /// <summary>Where a condition's right-hand value comes from (conditions.ts).</summary>
+    public enum ValueSourceKind
+    {
+        Literal,
+        ExcelColumn,
+        RelativeDate,
+        CurrentUser,
+        ContextValue
+    }
+
+    /// <summary>Condition comparison operators (conditions.ts).</summary>
+    public enum ConditionOperator
+    {
+        Eq,
+        Ne,
+        Gt,
+        Ge,
+        Lt,
+        Le,
+        Contains,
+        StartsWith,
+        Null,
+        NotNull,
+        In
+    }
+
+    public enum GroupLogic
+    {
+        And,
+        Or
+    }
+
+    /// <summary>Where export data comes from (config.ts).</summary>
+    public enum ExportSourceKind
+    {
+        Entity,
+        SavedView,
+        FetchXml
+    }
+
+    /// <summary>Attribute categories distinguished for import/export handling (metadata.ts).</summary>
+    public enum AttributeKind
+    {
+        String,
+        Memo,
+        Integer,
+        BigInt,
+        Decimal,
+        Double,
+        Money,
+        Boolean,
+        DateTime,
+        Choice,
+        MultiChoice,
+        Lookup,
+        UniqueIdentifier,
+        State,
+        Status,
+        Unknown
+    }
+
+    public enum LookupKind
+    {
+        Simple,
+        Polymorphic
+    }
+
+    /// <summary>Per-row evaluation status (import.ts RowStatus).</summary>
+    public enum RowStatus
+    {
+        Ready,
+        Warning,
+        MissingRequiredValue,
+        InvalidFormat,
+        LookupResolved,
+        LookupNotFound,
+        LookupAmbiguous,
+        LookupWrongTargetType,
+        PermissionIssue,
+        DuplicateInFile,
+        WriteBlocked,
+        Skipped,
+        Committed,
+        CommitFailed
+    }
+
+    /// <summary>Outcome of resolving one lookup value on one row (import.ts).</summary>
+    public enum LookupResolutionStatus
+    {
+        Resolved,
+        NotFound,
+        Ambiguous,
+        WrongTargetType,
+        Pending
+    }
+
+    /// <summary>How a match was obtained, for audit/UI (import.ts).</summary>
+    public enum ResolutionMethod
+    {
+        Guid,
+        BusinessKey,
+        SearchMatch,
+        Manual
+    }
+
+    public enum ImportMode
     {
         Strict,
         Partial
     }
 
-    /// <summary>
-    /// What to do when a lookup resolves to more than one candidate
-    /// (src/domain/config.ts). The row is never silently guessed.
-    /// </summary>
-    public enum ConflictStrategy
+    public enum ImportJobStatus
     {
-        Escalate,
-        Skip,
-        Fail
+        Draft,
+        Validated,
+        AwaitingConflicts,
+        Committing,
+        Completed,
+        CompletedWithErrors,
+        Aborted
     }
 
-    /// <summary>
-    /// Source of a condition's right-hand value (src/domain/conditions.ts).
-    /// </summary>
-    public enum ConditionValueType
+    public enum IssueSeverity
     {
-        /// <summary>A constant literal.</summary>
-        FixedValue,
-
-        /// <summary>Another Excel column of the same row.</summary>
-        ExcelColumn,
-
-        /// <summary>Relative date in days, e.g. @utcToday(-30d), resolved at run time.</summary>
-        RelativeDate
+        Error,
+        Warning,
+        Info
     }
 
-    /// <summary>Where a config sources its importable columns (Tab 1).</summary>
-    public enum SourceKind
+    /// <summary>Machine codes for config validation issues (issues.ts).</summary>
+    public enum ConfigIssueCode
     {
-        /// <summary>The entity itself.</summary>
-        Entity,
+        EntityMissing,
+        EntitySetChanged,
+        PrimaryIdChanged,
+        AttributeMissing,
+        AttributeNotWritable,
+        AttributeTypeChanged,
+        LookupAttributeMissing,
+        LookupAttributeNotLookup,
+        LookupTargetNotAllowed,
+        NavPropMissing,
+        SearchAttributeMissing,
+        BusinessKeyAttributeMissing,
+        ConditionAttributeMissing,
+        SchemaChangedSinceSave
+    }
 
-        /// <summary>A saved query (savedquery); its columns become importable.</summary>
-        SavedView
+    /// <summary>Role of a generated Excel column (template.ts).</summary>
+    public enum TemplateColumnRole
+    {
+        Value,
+        LookupVisible,
+        LookupId,
+        LookupLogicalName,
+        LookupBusinessKey,
+        RecordId
     }
 }

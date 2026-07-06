@@ -1,74 +1,77 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using LookupImportPlus.App;
+using LookupImportPlus.Data;
 using LookupImportPlus.UI;
 using LookupImportPlus.UI.Screens;
 using McTools.Xrm.Connection;
 using Microsoft.Xrm.Sdk;
 using XrmToolBox.Extensibility;
-// Disambiguate: both System.Windows.Forms and Microsoft.Xrm.Sdk define Label.
 using Label = System.Windows.Forms.Label;
 
 namespace LookupImportPlus
 {
     /// <summary>
     /// The plugin's root control. Hosts the shell (left navigation + content
-    /// panel) and routes navigation between the screens. Mirrors the Code App's
-    /// sidebar + main layout (src/app). The authenticated connection is provided
-    /// by the XrmToolBox host via <see cref="PluginControlBase.Service"/>.
+    /// panel), builds the composition root when a connection arrives, and routes
+    /// navigation between the screens (mirrors the Code App's Shell + AppContext).
     /// </summary>
-    public partial class LookupImportPlusControl : PluginControlBase, IScreenHost
+    public class LookupImportPlusControl : PluginControlBase, IScreenHost
     {
         private SplitContainer _split;
         private ListView _nav;
         private Panel _content;
         private Label _statusBadge;
-
-        private readonly Dictionary<ScreenName, ScreenControlBase> _screens =
-            new Dictionary<ScreenName, ScreenControlBase>();
+        private NotifyIcon _notify;
 
         private ScreenControlBase _current;
+
+        public new AppContainer Container { get; private set; }
 
         public LookupImportPlusControl()
         {
             BuildShell();
         }
 
-        // --- IScreenHost -----------------------------------------------------
-
-        IOrganizationService IScreenHost.Service => Service;
-
-        public string WebApplicationUrl => ConnectionDetail?.WebApplicationUrl ?? string.Empty;
-
+        // ── IScreenHost ──────────────────────────────────────────
         public void Navigate(ScreenName screen, object parameters = null)
         {
-            var control = GetOrCreate(screen);
+            var control = CreateScreen(screen);
+            control.Attach(this);
 
-            if (_current != control)
-            {
-                _content.SuspendLayout();
-                _content.Controls.Clear();
-                control.Attach(this);
-                _content.Controls.Add(control);
-                _content.ResumeLayout();
-                _current = control;
-                HighlightNav(screen);
-            }
+            _content.SuspendLayout();
+            var previous = _current;
+            _content.Controls.Clear();
+            _content.Controls.Add(control);
+            _content.ResumeLayout();
+            previous?.Dispose();
+            _current = control;
 
+            HighlightNav(screen);
             control.OnActivated(parameters);
         }
 
-        // --- Shell construction ---------------------------------------------
+        public void ExecuteWork(WorkAsyncInfo info) => WorkAsync(info);
 
+        public void Notify(string title, string body)
+        {
+            try
+            {
+                _notify.Visible = true;
+                _notify.ShowBalloonTip(4000, title, body, ToolTipIcon.Info);
+            }
+            catch { /* balloon tips can fail silently on some hosts */ }
+        }
+
+        // ── Shell construction ───────────────────────────────────
         private void BuildShell()
         {
             _split = new SplitContainer
             {
                 Dock = DockStyle.Fill,
                 FixedPanel = FixedPanel.Panel1,
-                SplitterDistance = 228,
-                IsSplitterFixed = false
+                SplitterDistance = 228
             };
 
             _nav = new ListView
@@ -79,13 +82,14 @@ namespace LookupImportPlus
                 FullRowSelect = true,
                 MultiSelect = false,
                 HideSelection = false,
-                BorderStyle = BorderStyle.None
+                BorderStyle = BorderStyle.None,
+                Font = new Font("Segoe UI", 10F)
             };
             _nav.Columns.Add("Screen", -2);
-            AddNavItem("Job-Konfigurationen", ScreenName.Configs);
-            AddNavItem("Importlaeufe", ScreenName.ImportRun);
-            AddNavItem("Konfliktkorb", ScreenName.Conflicts);
-            AddNavItem("Importhistorie", ScreenName.History);
+            AddNavItem(I18n.T("nav.configs"), ScreenName.Configs);
+            AddNavItem(I18n.T("nav.importruns"), ScreenName.ImportRun);
+            AddNavItem(I18n.T("nav.conflicts"), ScreenName.Conflicts);
+            AddNavItem(I18n.T("nav.history"), ScreenName.History);
             _nav.ItemSelectionChanged += OnNavSelectionChanged;
 
             _statusBadge = new Label
@@ -94,80 +98,69 @@ namespace LookupImportPlus
                 Height = 28,
                 TextAlign = ContentAlignment.MiddleLeft,
                 Padding = new Padding(8, 0, 0, 0),
-                Text = "Nicht verbunden",
-                ForeColor = SystemColors.GrayText,
-                BorderStyle = BorderStyle.None
+                Text = I18n.T("shell.offline"),
+                ForeColor = UiTheme.Muted
             };
 
             var navHost = new Panel { Dock = DockStyle.Fill };
             navHost.Controls.Add(_nav);
             navHost.Controls.Add(_statusBadge);
 
-            _content = new Panel { Dock = DockStyle.Fill };
+            _content = new Panel { Dock = DockStyle.Fill, Padding = new Padding(16) };
 
             _split.Panel1.Controls.Add(navHost);
             _split.Panel2.Controls.Add(_content);
-
             Controls.Add(_split);
 
-            // Land on the start page even before a connection is established;
-            // the placeholder screens do not require the Dataverse service.
-            _nav.Items[0].Selected = true;
+            _notify = new NotifyIcon { Icon = SystemIcons.Information, Text = "LookupImportPlus" };
+
+            ShowNotConnected();
         }
 
         private void AddNavItem(string text, ScreenName screen)
-        {
-            _nav.Items.Add(new ListViewItem(text) { Tag = screen });
-        }
+            => _nav.Items.Add(new ListViewItem(text) { Tag = screen });
 
         private void OnNavSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             if (e.IsSelected && e.Item.Tag is ScreenName screen)
-            {
                 Navigate(screen);
-            }
         }
 
         private void HighlightNav(ScreenName screen)
         {
             foreach (ListViewItem item in _nav.Items)
-            {
                 if (item.Tag is ScreenName s && s == screen && !item.Selected)
-                {
                     item.Selected = true;
-                }
-            }
         }
 
-        private ScreenControlBase GetOrCreate(ScreenName screen)
+        private ScreenControlBase CreateScreen(ScreenName screen)
         {
-            if (_screens.TryGetValue(screen, out var existing))
-            {
-                return existing;
-            }
-
-            ScreenControlBase control;
             switch (screen)
             {
-                case ScreenName.Configs: control = new ConfigsScreen(); break;
-                case ScreenName.Editor: control = new EditorScreen(); break;
-                case ScreenName.ImportRun: control = new ImportRunScreen(); break;
-                case ScreenName.Conflicts: control = new ConflictsScreen(); break;
-                case ScreenName.Resolve: control = new ResolveScreen(); break;
-                case ScreenName.History: control = new HistoryScreen(); break;
-                default: throw new ArgumentOutOfRangeException(nameof(screen), screen, null);
+                case ScreenName.Configs: return new ConfigsScreen();
+                case ScreenName.Editor: return new EditorScreen();
+                case ScreenName.ImportRun: return new ImportRunScreen();
+                case ScreenName.Conflicts: return new ConflictsScreen();
+                case ScreenName.Resolve: return new ResolveScreen();
+                case ScreenName.History: return new HistoryScreen();
+                default: throw new ArgumentOutOfRangeException(nameof(screen));
             }
-
-            _screens[screen] = control;
-            return control;
         }
 
-        // --- Host lifecycle --------------------------------------------------
+        private void ShowNotConnected()
+        {
+            _content.Controls.Clear();
+            _content.Controls.Add(new Label
+            {
+                Text = I18n.T("shell.offline"),
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter,
+                ForeColor = UiTheme.Muted,
+                Font = UiTheme.Body
+            });
+        }
 
-        /// <summary>
-        /// Called by the host when the (re)connection is established. We land on
-        /// the Job-Konfigurationen start page.
-        /// </summary>
+        // ── Host lifecycle ───────────────────────────────────────
         public override void UpdateConnection(
             IOrganizationService newService,
             ConnectionDetail detail,
@@ -175,12 +168,17 @@ namespace LookupImportPlus
             object parameter = null)
         {
             base.UpdateConnection(newService, detail, actionName, parameter);
+            if (newService == null) { ShowNotConnected(); return; }
+
+            var ctx = new DataverseContext(newService, detail?.WebApplicationUrl);
+            Container = new AppContainer(ctx, Paths.SettingsPath);
 
             _statusBadge.Text = detail != null
-                ? $"Verbunden mit {detail.ConnectionName}"
-                : "Nicht verbunden";
-            _statusBadge.ForeColor = detail != null ? Color.SeaGreen : SystemColors.GrayText;
+                ? I18n.T("shell.live") + " · " + detail.ConnectionName
+                : I18n.T("shell.offline");
+            _statusBadge.ForeColor = UiTheme.Success;
 
+            if (_nav.Items.Count > 0) _nav.Items[0].Selected = true;
             Navigate(ScreenName.Configs);
         }
     }

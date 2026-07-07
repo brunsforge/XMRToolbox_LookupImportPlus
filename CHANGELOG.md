@@ -6,6 +6,14 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 
 ## [Unreleased]
 
+## [0.1.12] – 2026-07-07
+
+### Behoben
+- **Import brach mit „BackgroundWorker meldet keinen Fortschritt" ab.** Dry Run und
+  Commit riefen `worker.ReportProgress(...)` auf, obwohl der XrmToolBox-Worker
+  `WorkerReportsProgress` nicht aktiviert hatte → `InvalidOperationException`. Beide
+  Work-Delegates setzen das Flag jetzt zu Beginn.
+
 ## [0.1.11] – 2026-07-07
 
 ### Behoben

@@ -145,6 +145,7 @@ namespace LookupImportPlus.UI.Screens
                 Work = (w, e) =>
                 {
                     var worker = (BackgroundWorker)w;
+                    worker.WorkerReportsProgress = true; // host worker may not enable this by default
                     var bytes = File.ReadAllBytes(path);
                     parsed = Host.Container.Parser.Parse(bytes);
 
@@ -301,6 +302,7 @@ namespace LookupImportPlus.UI.Screens
                 Work = (w, e) =>
                 {
                     var worker = (BackgroundWorker)w;
+                    worker.WorkerReportsProgress = true; // host worker may not enable this by default
                     Host.Container.Runner.Commit(job,
                         (done, total) => worker.ReportProgress(total == 0 ? 0 : done * 100 / total, I18n.T("run.busyWrite")));
                 },

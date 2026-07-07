@@ -26,6 +26,23 @@ namespace LookupImportPlus.UI
         private readonly Dictionary<string, List<AttributeMetadata>> _targetAttrs =
             new Dictionary<string, List<AttributeMetadata>>(StringComparer.OrdinalIgnoreCase);
 
+        // True while a combo selection is being restored programmatically, so the
+        // SelectedIndexChanged handler doesn't persist the restore as a user edit.
+        private bool _suppressComboSave;
+
+        private void SelectComboValue(ComboBox combo, string value)
+        {
+            _suppressComboSave = true;
+            try
+            {
+                int idx = -1;
+                for (int i = 0; i < combo.Items.Count; i++)
+                    if (string.Equals(combo.Items[i] as string, value ?? "", StringComparison.OrdinalIgnoreCase)) { idx = i; break; }
+                combo.SelectedIndex = idx;
+            }
+            finally { _suppressComboSave = false; }
+        }
+
         public LookupCardControl(IScreenHost host, EntityMetadata parent, LookupConfig lk)
         {
             _host = host;
@@ -135,14 +152,13 @@ namespace LookupImportPlus.UI
             var block = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoSize = true, Width = 660, BorderStyle = BorderStyle.FixedSingle, Padding = new Padding(6), Margin = new Padding(0, 0, 0, 6) };
             block.Controls.Add(new Label { Text = target, AutoSize = true, Font = UiTheme.Subheading });
 
-            var searchCombo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDown, Width = 240 };
-            searchCombo.Text = SearchAttrFor(target);
-            searchCombo.TextChanged += (s, e) => SetSearch(target, searchCombo.Text);
+            // DropDownList so only a real target attribute can be saved (no free text).
+            var searchCombo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 240 };
+            searchCombo.SelectedIndexChanged += (s, e) => { if (!_suppressComboSave) SetSearch(target, searchCombo.SelectedItem as string); };
             block.Controls.Add(Labeled(I18n.T("ed.searchFieldLabel"), searchCombo));
 
-            var bkCombo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDown, Width = 240 };
-            bkCombo.Text = BkAttrFor(target) ?? "";
-            bkCombo.TextChanged += (s, e) => SetBk(target, bkCombo.Text);
+            var bkCombo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 240 };
+            bkCombo.SelectedIndexChanged += (s, e) => { if (!_suppressComboSave) { var v = bkCombo.SelectedItem as string; SetBk(target, string.IsNullOrEmpty(v) ? null : v); } };
             block.Controls.Add(Labeled(I18n.T("ed.bkFieldLabel"), bkCombo));
 
             block.Controls.Add(new Label { Text = I18n.T("ed.conditionsLabel"), AutoSize = true, Font = UiTheme.Small, ForeColor = UiTheme.Muted, Margin = new Padding(0, 6, 0, 2) });
@@ -152,18 +168,33 @@ namespace LookupImportPlus.UI
             var add = UiTheme.Button(I18n.T("ed.addCondition"));
             add.Click += (s, e) =>
             {
-                var group = EnsureConditions(target);
-                group.Conditions.Add(new Condition { Attribute = "", Operator = ConditionOperator.Eq, Value = ConditionValue.Literal("") });
-                ReloadConditions(grid, target);
+                // A fresh row is intentionally incomplete (no attribute) — it is only
+                // persisted once the user fills it in fully (see RebuildConditionsFromGrid).
+                var idx = grid.Rows.Add("", ConditionOperator.Eq, I18n.T("ed.srcLiteral"), "", "✕");
+                grid.Rows[idx].DefaultCellStyle.BackColor = IncompleteColor;
             };
             block.Controls.Add(add);
 
-            // Populate attribute combos once the target metadata is available.
             LoadTargetAttrs(target, attrs =>
             {
-                var stringAttrs = attrs.Where(a => a.Kind == AttributeKind.String || a.Kind == AttributeKind.Memo).Select(a => a.LogicalName).ToArray();
+                var stringAttrs = attrs.Where(a => a.Kind == AttributeKind.String || a.Kind == AttributeKind.Memo)
+                                       .Select(a => a.LogicalName).OrderBy(x => x, StringComparer.OrdinalIgnoreCase).Cast<object>().ToArray();
+                searchCombo.Items.Clear();
                 searchCombo.Items.AddRange(stringAttrs);
+                SelectComboValue(searchCombo, SearchAttrFor(target));
+
+                bkCombo.Items.Clear();
+                bkCombo.Items.Add("");   // optional → blank = none
                 bkCombo.Items.AddRange(stringAttrs);
+                SelectComboValue(bkCombo, BkAttrFor(target) ?? "");
+
+                // Conditions may target ANY attribute, not just string/memo.
+                var attrCol = (DataGridViewComboBoxColumn)grid.Columns["attr"];
+                attrCol.Items.Clear();
+                attrCol.Items.AddRange(attrs.Select(a => a.LogicalName)
+                    .OrderBy(x => x, StringComparer.OrdinalIgnoreCase).Cast<object>().ToArray());
+                ReloadConditions(grid, target);
+                RebuildConditionsFromGrid(grid, target); // tint + drop any legacy incomplete rows
             });
 
             return block;
@@ -181,7 +212,8 @@ namespace LookupImportPlus.UI
                 BorderStyle = BorderStyle.FixedSingle,
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
             };
-            grid.Columns.Add(new DataGridViewTextBoxColumn { Name = "attr", HeaderText = I18n.T("ed.logicalName") });
+            // Attribute is a real target column (no free text); items filled after metadata loads.
+            grid.Columns.Add(new DataGridViewComboBoxColumn { Name = "attr", HeaderText = I18n.T("ed.logicalName"), FlatStyle = FlatStyle.Flat });
             var op = new DataGridViewComboBoxColumn { Name = "op", HeaderText = "Op" };
             op.Items.AddRange(Enum.GetValues(typeof(ConditionOperator)).Cast<object>().ToArray());
             grid.Columns.Add(op);
@@ -192,26 +224,30 @@ namespace LookupImportPlus.UI
             var del = new DataGridViewButtonColumn { Name = "del", HeaderText = "", Text = "✕", UseColumnTextForButtonValue = true, FillWeight = 10 };
             grid.Columns.Add(del);
 
+            // A combo cell holding a value not (yet) in its item list would throw; ignore it.
+            grid.DataError += (s, e) => e.ThrowException = false;
             grid.CurrentCellDirtyStateChanged += (s, e) => { if (grid.IsCurrentCellDirty) grid.CommitEdit(DataGridViewDataErrorContexts.Commit); };
-            grid.CellValueChanged += (s, e) => { if (e.RowIndex >= 0) WriteConditionRow(grid, target, e.RowIndex); };
+            grid.CellValueChanged += (s, e) => { if (e.RowIndex >= 0) RebuildConditionsFromGrid(grid, target); };
             grid.CellClick += (s, e) =>
             {
                 if (e.RowIndex >= 0 && grid.Columns[e.ColumnIndex].Name == "del")
                 {
-                    var group = ConditionsFor(target);
-                    if (e.RowIndex < group.Conditions.Count) group.Conditions.RemoveAt(e.RowIndex);
-                    ReloadConditions(grid, target);
+                    grid.Rows.RemoveAt(e.RowIndex);
+                    RebuildConditionsFromGrid(grid, target);
                 }
             };
-
-            ReloadConditions(grid, target);
             return grid;
         }
 
+        // Warm amber for a row that is not yet a complete, saveable condition.
+        private static readonly Color IncompleteColor = Color.FromArgb(255, 244, 214);
+
+        /// <summary>Fill the grid from the persisted (already-complete) conditions.</summary>
         private void ReloadConditions(DataGridView grid, string target)
         {
             grid.Rows.Clear();
             var group = ConditionsFor(target);
+            if (group?.Conditions == null) return;
             foreach (var c in group.Conditions)
             {
                 var vtLabel = c.Value?.Kind == ValueSourceKind.ExcelColumn ? I18n.T("ed.srcExcel")
@@ -224,19 +260,49 @@ namespace LookupImportPlus.UI
             }
         }
 
-        private void WriteConditionRow(DataGridView grid, string target, int rowIndex)
+        /// <summary>
+        /// The grid is the editing surface; the persisted group holds ONLY rows that
+        /// are complete and sensible. Incomplete rows stay visible (tinted) but are
+        /// never written to the config, so a half-filled condition can't be saved.
+        /// </summary>
+        private void RebuildConditionsFromGrid(DataGridView grid, string target)
         {
             var group = EnsureConditions(target);
-            while (group.Conditions.Count <= rowIndex) group.Conditions.Add(new Condition());
-            var c = group.Conditions[rowIndex];
-            var row = grid.Rows[rowIndex];
-            c.Attribute = row.Cells["attr"].Value?.ToString() ?? "";
-            if (row.Cells["op"].Value is ConditionOperator op) c.Operator = op;
-            var vt = row.Cells["vt"].Value?.ToString();
-            var val = row.Cells["val"].Value?.ToString() ?? "";
-            if (vt == I18n.T("ed.srcExcel")) c.Value = ConditionValue.Excel(val);
-            else if (vt == I18n.T("ed.srcRelative")) c.Value = ConditionValue.Relative(int.TryParse(val, out var n) ? n : 0);
-            else c.Value = ConditionValue.Literal(val);
+            group.Conditions.Clear();
+            foreach (DataGridViewRow row in grid.Rows)
+            {
+                if (row.IsNewRow) continue;
+                var c = ReadCondition(row);
+                row.DefaultCellStyle.BackColor = c != null ? Color.White : IncompleteColor;
+                if (c != null) group.Conditions.Add(c);
+            }
+        }
+
+        private static bool IsUnary(ConditionOperator op) =>
+            op == ConditionOperator.Null || op == ConditionOperator.NotNull;
+
+        /// <summary>Returns a complete condition, or null if the row is not fully/sensibly filled.</summary>
+        private Condition ReadCondition(DataGridViewRow row)
+        {
+            var attr = row.Cells["attr"].Value as string;
+            if (string.IsNullOrWhiteSpace(attr)) return null;
+            if (!(row.Cells["op"].Value is ConditionOperator op)) return null;
+
+            ConditionValue cv = null;
+            if (!IsUnary(op))
+            {
+                var vt = row.Cells["vt"].Value?.ToString();
+                var val = row.Cells["val"].Value?.ToString() ?? "";
+                if (string.IsNullOrWhiteSpace(val)) return null;             // needs a value
+                if (vt == I18n.T("ed.srcExcel")) cv = ConditionValue.Excel(val);
+                else if (vt == I18n.T("ed.srcRelative"))
+                {
+                    if (!int.TryParse(val, out var n)) return null;          // must be a whole number of days
+                    cv = ConditionValue.Relative(n);
+                }
+                else cv = ConditionValue.Literal(val);
+            }
+            return new Condition { Attribute = attr, Operator = op, Value = cv };
         }
 
         private ConditionGroup EnsureConditions(string target)

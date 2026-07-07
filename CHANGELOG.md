@@ -34,7 +34,23 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
   bewusst nicht auswählbar — das steht jetzt klar über der Liste.
 
 ### Geändert
+- **Tab 4 – Auflösungslogik klarer erklärt:** Der Intro-Text macht die Reihenfolge
+  GUID → Business Key → Suchfeld und das Fallthrough-Verhalten (nächster Schritt nur
+  bei keinem eindeutigen Treffer) explizit — je Schritt eine Zeile.
+- **Suchfeld & Business-Key-Attribut sind jetzt Auswahllisten** echter Ziel-Attribute
+  (DropDownList statt Freitext). Damit lassen sich nur gültige Spalten speichern und
+  die Auswahl wird zuverlässig persistiert.
 - Deutsche Ausgabe: „Konfliktkorb"-Wording durchgängig auf **„Konflikte"** vereinheitlicht.
+
+### Behoben (Tab 4, Forts.)
+- **Suchfeld wurde nicht sauber gespeichert:** Ursache war die Freitext-Combo mit
+  `TextChanged`. Jetzt DropDownList + `SelectedIndexChanged`, Auswahl wird nach dem
+  Laden der Metadaten korrekt wiederhergestellt.
+- **Unvollständige Bedingungen sind nicht mehr speicherbar:** Das Bedingungs-Grid ist
+  reine Eingabefläche; nur vollständige, sinnvolle Zeilen (echtes Attribut + Operator
+  + Wert, außer bei `Null`/`NotNull`) werden in die Konfiguration übernommen.
+  Unvollständige Zeilen bleiben sichtbar (amber hinterlegt), werden aber nie gespeichert.
+  Das Bedingungs-Attribut ist ebenfalls eine Auswahlliste echter Ziel-Attribute.
 
 ### Hinweis
 - Der gemeldete Export-Effekt „nur Spaltenköpfe, keine Daten" ist **kein Fehler**:

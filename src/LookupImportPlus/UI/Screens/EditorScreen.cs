@@ -359,7 +359,7 @@ namespace LookupImportPlus.UI.Screens
             var intro = new Label
             {
                 Dock = DockStyle.Top,
-                Height = 108,
+                Height = 132,
                 Font = UiTheme.Small,
                 Text = I18n.T("ed.lookupIntroTitle") + ":\n" +
                        "1) " + I18n.T("ed.match1") + "\n" +

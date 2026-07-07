@@ -39,12 +39,7 @@ namespace LookupImportPlus.UI.Screens
             _grid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             _grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             _grid.BackgroundColor = Color.White;
-            _grid.Columns.Add("row", I18n.T("run.colRow"));
-            _grid.Columns.Add("resolution", I18n.T("run.colResolution"));
-            _grid.Columns.Add("status", I18n.T("run.colStatus"));
-            _grid.Columns[0].FillWeight = 20;
-            _grid.Columns[1].FillWeight = 55;
-            _grid.Columns[2].FillWeight = 25;
+            BuildGridColumns();
             _grid.CellFormatting += GridCellFormatting;
             Controls.Add(_grid);
 
@@ -100,9 +95,23 @@ namespace LookupImportPlus.UI.Screens
             return bar;
         }
 
+        // Rebuilds the fixed result columns. Guarded so a row is never added to a
+        // column-less grid (throws "columns must be added first").
+        private void BuildGridColumns()
+        {
+            _grid.Columns.Clear();
+            _grid.Columns.Add("row", I18n.T("run.colRow"));
+            _grid.Columns.Add("resolution", I18n.T("run.colResolution"));
+            _grid.Columns.Add("status", I18n.T("run.colStatus"));
+            _grid.Columns[0].FillWeight = 20;
+            _grid.Columns[1].FillWeight = 55;
+            _grid.Columns[2].FillWeight = 25;
+        }
+
         public override void OnActivated(object parameters)
         {
             if (Host.Container == null) return;
+            if (_grid.Columns.Count == 0) BuildGridColumns();
 
             if (parameters is string configId)
                 _config = Host.Container.GetConfig(configId);

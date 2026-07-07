@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Xml.Linq;
 using LookupImportPlus.Data;
 using LookupImportPlus.Domain;
 using LookupImportPlus.Services.Excel;
@@ -40,7 +41,11 @@ namespace LookupImportPlus.Services
         {
             if (config.ExportSource.Kind == ExportSourceKind.SavedView && !string.IsNullOrEmpty(viewFetchXml))
             {
-                var res = _ctx.RetrieveMultiple(new FetchExpression(viewFetchXml));
+                // The view selects WHICH rows (filter/order); the config selects WHICH
+                // columns. A raw view FetchXML only pulls the view's own columns, so
+                // config columns (e.g. firstname/lastname) come back empty. Inject them.
+                var fetch = EnsureFetchAttributes(viewFetchXml, config.TargetEntity, CrmColumns(config));
+                var res = _ctx.RetrieveMultiple(new FetchExpression(fetch));
                 return res.Entities.Take(count).ToList();
             }
 
@@ -50,6 +55,41 @@ namespace LookupImportPlus.Services
                 TopCount = Math.Min(count, 5000)
             };
             return _ctx.RetrieveMultiple(query).Entities.ToList();
+        }
+
+        /// <summary>
+        /// Add the config's attributes to a view's FetchXML primary entity so the export
+        /// carries them even when the view doesn't select them. Keeps the view's filter,
+        /// order and links. Leaves an <c>&lt;all-attributes/&gt;</c> view untouched.
+        /// </summary>
+        private static string EnsureFetchAttributes(string fetchXml, string entityName, IEnumerable<string> attributes)
+        {
+            try
+            {
+                var doc = XDocument.Parse(fetchXml);
+                var entity = doc.Descendants("entity")
+                    .FirstOrDefault(e => string.Equals((string)e.Attribute("name"), entityName, StringComparison.OrdinalIgnoreCase))
+                    ?? doc.Descendants("entity").FirstOrDefault();
+                if (entity == null || entity.Elements("all-attributes").Any()) return fetchXml;
+
+                var present = new HashSet<string>(
+                    entity.Elements("attribute").Select(a => (string)a.Attribute("name")).Where(n => n != null),
+                    StringComparer.OrdinalIgnoreCase);
+
+                var toAdd = attributes
+                    .Where(a => !string.IsNullOrEmpty(a) && !present.Contains(a))
+                    .Select(a => new XElement("attribute", new XAttribute("name", a)))
+                    .ToList();
+                if (toAdd.Count == 0) return fetchXml;
+
+                // Insert before filter/order/link-entity to keep FetchXML valid.
+                var firstNonAttr = entity.Elements().FirstOrDefault(e => e.Name.LocalName != "attribute");
+                if (firstNonAttr != null) firstNonAttr.AddBeforeSelf(toAdd);
+                else entity.Add(toAdd);
+
+                return doc.ToString();
+            }
+            catch { return fetchXml; }
         }
 
         /// <summary>Render a record as CRM columns → display values (for the preview toggle).</summary>

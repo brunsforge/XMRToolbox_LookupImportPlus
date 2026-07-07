@@ -6,6 +6,17 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 
 ## [Unreleased]
 
+## [0.1.13] – 2026-07-08
+
+### Behoben
+- **Absturz beim Öffnen des Importlaufs** („Zeilen können nur zu einem DataGridView mit
+  Spalten hinzugefügt werden"). Der Screen stellt die Ergebnis-Spalten jetzt sicher,
+  bevor Zeilen hinzugefügt werden.
+- **Export aus einer gespeicherten Ansicht ließ Config-Spalten leer** (z. B. Vorname/
+  Nachname). Das View-FetchXML selektierte nur die View-Spalten. Jetzt gilt: die **Ansicht
+  filtert die Zeilen**, die **Konfiguration bestimmt die Spalten** — die Config-Attribute
+  werden ins FetchXML injiziert (eine `all-attributes`-Ansicht bleibt unangetastet).
+
 ## [0.1.12] – 2026-07-07
 
 ### Behoben

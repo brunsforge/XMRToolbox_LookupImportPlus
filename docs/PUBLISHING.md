@@ -30,10 +30,10 @@ gespeichert. Der Workflow liegt bereits vor: `.github/workflows/release.yml`.
    <https://www.nuget.org>.
 2. **Trusted-Publishing-Policy** auf nuget.org anlegen — *Account → Trusted Publishing →
    Add*:
-   - **Package owner:** dein nuget.org-Benutzer/-Organisation
-   - **Package:** `LookupImportPlus`
-   - **Repository owner:** dein GitHub-Benutzer/-Org (z. B. `brunsforge`)
-   - **Repository:** `LookupImportPlus`
+   - **Package owner:** `AndreasBrunsmann`
+   - **Package:** `LookupImportPlus`  *(die nuget-Paket-ID, nicht der Repo-Name)*
+   - **Repository owner:** `brunsforge`
+   - **Repository:** `XMRToolbox_LookupImportPlus`
    - **Workflow file:** `release.yml`
    - **Environment:** leer lassen (oder eins setzen und im Workflow ergänzen)
 3. **GitHub-Variable** setzen — Repo *Settings → Secrets and variables → Actions →

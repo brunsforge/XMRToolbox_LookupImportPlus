@@ -25,12 +25,13 @@ namespace LookupImportPlus
             return new LookupImportPlusControl();
         }
 
-        // IGitHubPlugin -> "open source" badge + update checks.
-        public string RepositoryName => "LookupImportPlus";
+        // IGitHubPlugin -> "open source" badge + update checks. Points at THIS
+        // plugin's repository (distinct from the original Code App source repo).
+        public string RepositoryName => "XMRToolbox_LookupImportPlus";
         public string UserName => "brunsforge";
 
         // IHelpPlugin -> the "?" button in the plugin toolbar.
-        public string HelpUrl => "https://github.com/brunsforge/LookupImportPlus";
+        public string HelpUrl => "https://github.com/brunsforge/XMRToolbox_LookupImportPlus";
 
         public Plugin()
         {

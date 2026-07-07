@@ -5,8 +5,8 @@ name: Release
 #
 # One-time setup (see docs/PUBLISHING.md):
 #   • nuget.org → Account → Trusted Publishing: add a policy for package
-#     "LookupImportPlus", repository owner = your GitHub user/org, repository =
-#     LookupImportPlus, workflow = release.yml (environment optional).
+#     "LookupImportPlus", repository owner = brunsforge, repository =
+#     XMRToolbox_LookupImportPlus, workflow = release.yml (environment optional).
 #   • GitHub repo → Settings → Secrets and variables → Actions → Variables:
 #     add NUGET_USER = your nuget.org username.
 

@@ -40,5 +40,5 @@ XrmToolBox-Plugin (WinForms, .NET Framework 4.8) über das Dataverse-**SDK**.
 - 21 Kernlogik-Tests + 15 End-to-End-Tests gegen eine echte Dataverse-Org grün.
 - Release-Build: 0 Warnungen, 0 Fehler.
 
-[Unreleased]: https://github.com/brunsforge/LookupImportPlus/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/brunsforge/LookupImportPlus/releases/tag/v0.1.0
+[Unreleased]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/releases/tag/v0.1.0

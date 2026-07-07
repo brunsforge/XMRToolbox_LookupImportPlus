@@ -122,8 +122,17 @@ namespace LookupImportPlus.UI.Screens
             }
         }
 
+        /// <summary>Export needs at least one selected column; the record key alone is useless.</summary>
+        private bool EnsureHasColumns(JobConfiguration c)
+        {
+            if (c.Columns.Count > 0) return true;
+            MessageBox.Show(I18n.T("ed.needColumns"));
+            return false;
+        }
+
         private void ExportTemplate(JobConfiguration c)
         {
+            if (!EnsureHasColumns(c)) return;
             var path = AskSavePath(c.Name + "_Template");
             if (path == null) return;
             try
@@ -136,6 +145,7 @@ namespace LookupImportPlus.UI.Screens
 
         private void ExportData(JobConfiguration c)
         {
+            if (!EnsureHasColumns(c)) return;
             var path = AskSavePath(c.Name + "_Export");
             if (path == null) return;
 

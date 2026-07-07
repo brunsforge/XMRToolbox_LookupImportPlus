@@ -269,8 +269,21 @@ namespace LookupImportPlus.UI.Screens
             _colGrid.CurrentCellDirtyStateChanged += (s, e) => { if (_colGrid.IsCurrentCellDirty) _colGrid.CommitEdit(DataGridViewDataErrorContexts.Commit); };
             _colGrid.CellValueChanged += ColGridCellValueChanged;
 
+            var pkHint = new Label
+            {
+                Dock = DockStyle.Top,
+                Height = 22,
+                Text = I18n.T("ed.pkAutoIncluded"),
+                ForeColor = UiTheme.Muted,
+                Font = UiTheme.Small,
+                Padding = new Padding(2, 4, 0, 0)
+            };
+
+            // Dock order: filterBar (added last) sits at the very top, pkHint just below it,
+            // grid fills the middle, buttons pinned to the bottom.
             _tab3.Controls.Add(_colGrid);
             _tab3.Controls.Add(buttons);
+            _tab3.Controls.Add(pkHint);
             _tab3.Controls.Add(filterBar);
         }
 
@@ -394,8 +407,17 @@ namespace LookupImportPlus.UI.Screens
                 modal.ShowDialog(this);
         }
 
+        /// <summary>Export needs at least one selected column; the record key alone is useless.</summary>
+        private bool EnsureHasColumns()
+        {
+            if (_config.Columns.Count > 0) return true;
+            MessageBox.Show(I18n.T("ed.needColumns"));
+            return false;
+        }
+
         private void ExportTemplate()
         {
+            if (!EnsureHasColumns()) return;
             using (var dlg = new SaveFileDialog { Filter = "Excel (*.xlsx)|*.xlsx", FileName = (_config.Name ?? "Template") + "_Template.xlsx" })
             {
                 if (dlg.ShowDialog() != DialogResult.OK) return;
@@ -407,6 +429,7 @@ namespace LookupImportPlus.UI.Screens
         private void ExportData()
         {
             if (_entity == null) return;
+            if (!EnsureHasColumns()) return;
             CommitGeneral();
             string path;
             using (var dlg = new SaveFileDialog { Filter = "Excel (*.xlsx)|*.xlsx", FileName = (_config.Name ?? "Export") + "_Export.xlsx" })

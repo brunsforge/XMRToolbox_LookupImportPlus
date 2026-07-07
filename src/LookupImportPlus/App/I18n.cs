@@ -178,6 +178,8 @@ namespace LookupImportPlus.App
             ["ed.emptyTemplate"] = new Entry("Empty template", "Leeres Template"),
             ["ed.previewData"] = new Entry("Preview data", "Daten-Vorschau"),
             ["ed.exportData"] = new Entry("Export data (from source)", "Daten exportieren (aus Quelle)"),
+            ["ed.needColumns"] = new Entry("Select at least one column before exporting.", "Bitte vor dem Export mindestens eine Spalte auswählen."),
+            ["ed.pkAutoIncluded"] = new Entry("The record key (lip__recordid) is added automatically for update/upsert — you don't select it here.", "Der Datensatz-Schlüssel (lip__recordid) wird bei Update/Upsert automatisch angehängt – hier nicht auswählbar."),
             ["ed.lookupIntroTitle"] = new Entry("How a lookup is resolved", "Wie ein Lookup aufgelöst wird"),
             ["ed.selectLookupHint"] = new Entry("Select a lookup column in the Columns tab (step 3) to configure it here.", "Wähle im Register Spalten (Schritt 3) eine Lookup-Spalte, um sie hier zu konfigurieren."),
             ["ed.match1"] = new Entry("GUID column — if filled, it wins (exact record). For polymorphic lookups the type column decides account vs. contact.", "GUID-Spalte — wenn gefüllt, gewinnt sie (exakter Datensatz). Bei polymorphen Lookups entscheidet die Typ-Spalte Konto vs. Kontakt."),

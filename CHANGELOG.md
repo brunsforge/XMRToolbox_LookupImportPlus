@@ -25,6 +25,14 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
   Combobox neu, ohne die gespeicherte View wieder zu selektieren — sie wirkte
   dadurch „nicht gespeichert". Auswahl wird jetzt nach dem Laden wiederhergestellt.
 
+### Hinzugefügt
+- **Export verlangt jetzt mindestens eine ausgewählte Spalte** (Editor *und*
+  Konfig-Karte, Template *und* Daten-Export). Ohne Spalte erscheint ein Hinweis
+  statt einer nutzlosen Datei mit nur dem Schlüsselfeld.
+- **Hinweis an der Spaltenliste (Tab 3):** Der Datensatz-Schlüssel
+  (`lip__recordid`) wird bei Update/Upsert automatisch angehängt und ist im Grid
+  bewusst nicht auswählbar — das steht jetzt klar über der Liste.
+
 ### Geändert
 - Deutsche Ausgabe: „Konfliktkorb"-Wording durchgängig auf **„Konflikte"** vereinheitlicht.
 

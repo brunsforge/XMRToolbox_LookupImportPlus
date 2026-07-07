@@ -30,3 +30,6 @@ $RECYCLE.BIN/
 
 # XrmToolBox local plugin deploy target (if used)
 deploy/
+
+# Downloaded build tools (ILRepack.exe)
+build/tools/

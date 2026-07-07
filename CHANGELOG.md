@@ -6,6 +6,18 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 
 ## [Unreleased]
 
+## [0.1.6] – 2026-07-07
+
+### Behoben
+- **Store-Validierung „assembly version must match package version" (endgültig):**
+  Die Tool Library verlangt, dass **jede** Assembly im Paket die Paketversion trägt.
+  Third-Party-Bibliotheken (ClosedXML, ClosedXML.Parser, DocumentFormat.OpenXml,
+  ExcelNumberFormat, SixLabors.Fonts, RBush) lassen sich nicht umversionieren, daher
+  werden sie jetzt via **ILRepack in `LookupImportPlus.dll` hineingemergt** — das Paket
+  enthält nur noch **eine** Assembly mit der Paketversion (wie die kanonischen Plugins,
+  z. B. PluginTraceViewer). Plugin-Load und der ClosedXML-Excel-Pfad sind mit der
+  gemergten Assembly verifiziert.
+
 ## [0.1.5] – 2026-07-07
 
 ### Behoben
@@ -86,7 +98,8 @@ XrmToolBox-Plugin (WinForms, .NET Framework 4.8) über das Dataverse-**SDK**.
 - 21 Kernlogik-Tests + 15 End-to-End-Tests gegen eine echte Dataverse-Org grün.
 - Release-Build: 0 Warnungen, 0 Fehler.
 
-[Unreleased]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.5...HEAD
+[Unreleased]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.6...HEAD
+[0.1.6]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.2...v0.1.3

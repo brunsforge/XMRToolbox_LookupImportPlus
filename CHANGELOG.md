@@ -6,6 +6,18 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 
 ## [Unreleased]
 
+## [0.1.4] – 2026-07-07
+
+### Behoben
+- **Store-Validierung „assembly version must match package version":** Die net48-
+  Framework-Facades (`System.Memory`, `System.Buffers`, `System.ValueTuple`,
+  `System.Runtime.CompilerServices.Unsafe`, `System.Numerics.Vectors`,
+  `System.Threading.Tasks.Extensions`) und `Microsoft.Bcl.HashCode` werden **nicht
+  mehr mitgeliefert**. Sie sind bereits in XrmToolBox / im .NET Framework enthalten
+  und lösen auf net48 auf die Framework-Version (z. B. `4.8.4161.0`) auf, was die
+  Store-Prüfung scheitern ließ. Das Paket enthält jetzt nur noch das Plugin plus die
+  echten Fremdbibliotheken (ClosedXML-Closure), wie es die XrmToolBox-Doku verlangt.
+
 ## [0.1.3] – 2026-07-07
 
 ### Geändert
@@ -66,7 +78,8 @@ XrmToolBox-Plugin (WinForms, .NET Framework 4.8) über das Dataverse-**SDK**.
 - 21 Kernlogik-Tests + 15 End-to-End-Tests gegen eine echte Dataverse-Org grün.
 - Release-Build: 0 Warnungen, 0 Fehler.
 
-[Unreleased]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.4...HEAD
+[0.1.4]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.0...v0.1.1

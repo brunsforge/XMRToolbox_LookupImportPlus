@@ -25,23 +25,23 @@ $binDir = Join-Path $root "src\LookupImportPlus\bin\$Configuration"
 $deployDir = Join-Path $root "deploy"
 $pluginsDir = Join-Path $deployDir "Plugins"
 
-# Assemblies to ship. Prefixes match our plugin + ClosedXML closure + the net48
-# polyfills that ClosedXML / DocumentFormat.OpenXml require (Span/Memory support).
+# Assemblies to ship: our plugin + the genuine third-party libraries that
+# XrmToolBox does NOT already include (the ClosedXML closure).
+#
+# We deliberately do NOT ship the System.* framework facades (System.Memory,
+# System.Buffers, System.ValueTuple, System.Runtime.CompilerServices.Unsafe, …)
+# or Microsoft.Bcl.HashCode: those are already provided by XrmToolBox / the .NET
+# Framework. On net48 they are type-forwarders that resolve to the framework
+# version (e.g. 4.8.4161.0), which makes the Tool Library's "assembly version must
+# match the package version" check fail. The XrmToolBox packaging guidance is
+# explicit: ship only your files or files not already included in XrmToolBox.
 $shipPrefixes = @(
     "LookupImportPlus",
     "ClosedXML",
     "DocumentFormat.OpenXml",
     "ExcelNumberFormat",
     "RBush",
-    "SixLabors",
-    "Microsoft.Bcl.HashCode",
-    "System.Memory",
-    "System.Buffers",
-    "System.Numerics.Vectors",
-    "System.Runtime.CompilerServices.Unsafe",
-    "System.Threading.Tasks.Extensions",
-    "System.ValueTuple",
-    "System.IO.Packaging"
+    "SixLabors"
 )
 
 Write-Host "==> Building $Configuration ..." -ForegroundColor Cyan

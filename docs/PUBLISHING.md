@@ -35,10 +35,11 @@ gespeichert. Der Workflow liegt bereits vor: `.github/workflows/release.yml`.
    - **Repository owner:** `brunsforge`
    - **Repository:** `XMRToolbox_LookupImportPlus`
    - **Workflow file:** `release.yml`
-   - **Environment:** leer lassen (oder eins setzen und im Workflow ergänzen)
-3. **GitHub-Variable** setzen — Repo *Settings → Secrets and variables → Actions →
-   Variables → New variable*:
-   - `NUGET_USER` = dein nuget.org-Benutzername
+   - **Environment:** **leer lassen** (der Workflow nutzt keins — ein Wert hier lässt die
+     Policy nie matchen)
+
+Der nuget-Benutzername ist im Workflow fest hinterlegt (`AndreasBrunsmann`, kein Geheimnis) —
+eine GitHub-Variable ist **nicht** nötig. Die **Policy** autorisiert die Veröffentlichung.
 
 > Für die **allererste** Veröffentlichung eines neuen Paket-Namens: nuget.org erlaubt das
 > Anlegen über eine Policy, die auf deinen Owner zeigt. Klappt der erste Trusted-Publish

@@ -6,9 +6,9 @@ name: Release
 # One-time setup (see docs/PUBLISHING.md):
 #   • nuget.org → Account → Trusted Publishing: add a policy for package
 #     "LookupImportPlus", repository owner = brunsforge, repository =
-#     XMRToolbox_LookupImportPlus, workflow = release.yml (environment optional).
-#   • GitHub repo → Settings → Secrets and variables → Actions → Variables:
-#     add NUGET_USER = your nuget.org username.
+#     XMRToolbox_LookupImportPlus, workflow = release.yml, ENVIRONMENT LEFT EMPTY.
+#   (The nuget username is hardcoded in the login step below — no repo variable
+#    needed. The policy is what authorizes publishing.)
 
 on:
   push:
@@ -53,7 +53,9 @@ jobs:
         id: login
         uses: NuGet/login@v1
         with:
-          user: ${{ vars.NUGET_USER }}
+          # nuget.org username (not a secret). The Trusted Publishing policy on
+          # nuget.org is what actually authorizes this repo/workflow to publish.
+          user: AndreasBrunsmann
 
       - name: Push to nuget.org
         shell: pwsh

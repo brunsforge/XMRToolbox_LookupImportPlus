@@ -6,6 +6,14 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 
 ## [Unreleased]
 
+## [0.1.3] – 2026-07-07
+
+### Geändert
+- XrmToolBox-Dependency auf die kanonische Host-Version `1.2025.10.74` gesetzt
+  (identisch zu `XrmToolBoxPackage` und den offiziellen MscrmTools-Plugins). Zusammen
+  mit dem Unlisten der dependency-losen 0.1.0 sind damit alle gelisteten Versionen
+  Store-konform.
+
 ## [0.1.2] – 2026-07-07
 
 ### Geändert
@@ -58,7 +66,8 @@ XrmToolBox-Plugin (WinForms, .NET Framework 4.8) über das Dataverse-**SDK**.
 - 21 Kernlogik-Tests + 15 End-to-End-Tests gegen eine echte Dataverse-Org grün.
 - Release-Build: 0 Warnungen, 0 Fehler.
 
-[Unreleased]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/releases/tag/v0.1.0

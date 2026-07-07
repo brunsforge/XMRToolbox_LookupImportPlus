@@ -34,12 +34,13 @@ namespace LookupImportPlus.UI
 
             Width = 700;
             AutoSize = true;
+            MinimumSize = new Size(700, 0);
             BorderStyle = BorderStyle.FixedSingle;
             Padding = new Padding(10);
             Margin = new Padding(0, 0, 0, 12);
             BackColor = Color.White;
 
-            var layout = new FlowLayoutPanel { Dock = DockStyle.Top, FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoSize = true, Width = 680 };
+            var layout = new FlowLayoutPanel { FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoSize = true, Width = 680 };
             layout.Controls.Add(new Label { Text = $"{_lk.VisibleColumn} → {_lk.LookupAttribute}", AutoSize = true, Font = UiTheme.Subheading, Margin = new Padding(0, 0, 0, 6) });
 
             layout.Controls.Add(Field(I18n.T("ed.visibleColumn"), _lk.VisibleColumn, v => _lk.VisibleColumn = v));
@@ -176,6 +177,8 @@ namespace LookupImportPlus.UI
                 Height = 120,
                 AllowUserToAddRows = false,
                 RowHeadersVisible = false,
+                BackgroundColor = Color.White,
+                BorderStyle = BorderStyle.FixedSingle,
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
             };
             grid.Columns.Add(new DataGridViewTextBoxColumn { Name = "attr", HeaderText = I18n.T("ed.logicalName") });
@@ -288,7 +291,7 @@ namespace LookupImportPlus.UI
         private static Control Labeled(string label, Control c)
         {
             var p = new FlowLayoutPanel { FlowDirection = FlowDirection.LeftToRight, WrapContents = false, AutoSize = true, Margin = new Padding(0, 2, 0, 2) };
-            p.Controls.Add(new Label { Text = label, AutoSize = true, Width = 180, Font = UiTheme.Small, Padding = new Padding(0, 6, 0, 0) });
+            p.Controls.Add(new Label { Text = label, AutoSize = false, Width = 180, Height = 23, TextAlign = ContentAlignment.MiddleLeft, Font = UiTheme.Small });
             p.Controls.Add(c);
             return p;
         }

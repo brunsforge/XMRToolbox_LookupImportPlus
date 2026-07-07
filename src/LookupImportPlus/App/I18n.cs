@@ -45,7 +45,7 @@ namespace LookupImportPlus.App
         {
             ["nav.configs"] = new Entry("Job configurations", "Job-Konfigurationen"),
             ["nav.importruns"] = new Entry("Import runs", "Importläufe"),
-            ["nav.conflicts"] = new Entry("Conflict basket", "Konfliktkorb"),
+            ["nav.conflicts"] = new Entry("Conflicts", "Konflikte"),
             ["nav.history"] = new Entry("Import history", "Importhistorie"),
             ["shell.live"] = new Entry("Dataverse connected", "Dataverse verbunden"),
             ["shell.offline"] = new Entry("Not connected", "Nicht verbunden"),
@@ -87,7 +87,7 @@ namespace LookupImportPlus.App
             ["run.errors"] = new Entry("Errors", "Fehler"),
             ["run.totalRows"] = new Entry("Total rows", "Zeilen gesamt"),
             ["run.needDecision"] = new Entry("conflict(s) need a decision.", "Konflikt(e) benötigen eine Entscheidung."),
-            ["run.openBasket"] = new Entry("Open conflict basket →", "Konfliktkorb öffnen →"),
+            ["run.openBasket"] = new Entry("Open conflicts →", "Konflikte öffnen →"),
             ["run.writeMode"] = new Entry("Write mode:", "Schreibmodus:"),
             ["run.commit"] = new Entry("Commit", "Commit"),
             ["run.commitBlocked"] = new Entry("Resolve conflicts first", "Erst Konflikte lösen"),

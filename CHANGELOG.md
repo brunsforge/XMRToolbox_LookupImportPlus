@@ -6,6 +6,30 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 
 ## [Unreleased]
 
+## [0.1.9] – 2026-07-07
+
+### Behoben
+- **Tab 4 (Lookup-Maske) war unbrauchbar dargestellt:** Die Lookup-Karte hatte
+  `AutoSize`, ihr Inhalt aber `Dock.Top`. Ein angedocktes Kind meldet dem AutoSize
+  des Elternteils keine Breite, weshalb die Karte im FlowLayoutPanel von Tab 4 auf
+  ~22 px Breite kollabierte. Docking entfernt, `MinimumSize` als Sicherheitsnetz
+  gesetzt — die Karte füllt jetzt die volle Breite (700 px).
+- **Label-Ausrichtung in der Lookup-Karte:** Labels hatten gleichzeitig `AutoSize`
+  und `Width=180`; AutoSize gewann, wodurch die Eingabefelder je nach Beschriftungs-
+  länge versprangen. Feste Breite ohne AutoSize (`TextAlign=MiddleLeft`) → bündige
+  Felder.
+- **Leere Bedingungs-Grids** wirkten „kaputt" (großer grauer Block). Jetzt weißer
+  Hintergrund mit sauberem Rahmen.
+
+### Geändert
+- Deutsche Ausgabe: „Konfliktkorb"-Wording durchgängig auf **„Konflikte"** vereinheitlicht.
+
+### Hinweis
+- Der gemeldete Export-Effekt „nur Spaltenköpfe, keine Daten" ist **kein Fehler**:
+  Die getestete Trial-Umgebung enthält 0 Accounts/Contacts. Gegen eine Entität mit
+  Daten (`businessunit`) liefert der Export korrekt Kopf **und** Datenzeilen; die
+  Konfigurations-Persistenz (Spalten/Header) ist ebenfalls verifiziert korrekt.
+
 ## [0.1.8] – 2026-07-07
 
 ### Behoben

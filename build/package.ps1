@@ -29,10 +29,16 @@ $deployDir = Join-Path $root "deploy"
 $pluginsDir = Join-Path $deployDir "Plugins"
 $toolsDir = Join-Path $PSScriptRoot "tools"
 
-# Third-party assemblies to merge INTO the plugin (the ClosedXML closure). These
-# are genuine libraries XrmToolBox does not provide. Everything else referenced
-# (System.*, Microsoft.Bcl.*, Microsoft.Xrm.*, XrmToolBox.*, Newtonsoft) is host-
-# or framework-provided: resolved by ILRepack via /lib but NOT merged/shipped.
+# Third-party assemblies to merge INTO the plugin. These are genuine libraries
+# XrmToolBox does NOT provide, so they must live inside our single assembly:
+#   • the ClosedXML closure (ClosedXML, OpenXml, SixLabors.Fonts, RBush, …)
+#   • Microsoft.Bcl.HashCode — ClosedXML needs it; XrmToolBox ships neither the
+#     assembly nor a binding redirect for it, so an external reference would fail
+#     to load ("could not load Microsoft.Bcl.HashCode 1.0.0.0").
+# NOT merged (host-provided WITH binding redirects in XrmToolBox.exe.config):
+# System.Memory / System.Buffers / System.Numerics.Vectors /
+# System.Runtime.CompilerServices.Unsafe — resolved by ILRepack via /lib, left
+# external, and redirected to XrmToolBox's versions at runtime.
 $mergeDlls = @(
     "ClosedXML.dll",
     "ClosedXML.Parser.dll",
@@ -40,7 +46,11 @@ $mergeDlls = @(
     "DocumentFormat.OpenXml.Framework.dll",
     "ExcelNumberFormat.dll",
     "SixLabors.Fonts.dll",
-    "RBush.dll"
+    "RBush.dll",
+    "Microsoft.Bcl.HashCode.dll"
+    # NOTE: do NOT merge the System.* Span/Memory polyfills — internalizing them
+    # breaks ClosedXML/OpenXml document generation (empty output). XrmToolBox ships
+    # them and binding-redirects them, so they stay external and load at runtime.
 )
 
 function Get-ILRepack {

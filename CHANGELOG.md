@@ -6,6 +6,16 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 
 ## [Unreleased]
 
+## [0.1.7] – 2026-07-07
+
+### Behoben
+- **Plugin lud nicht in XrmToolBox** (erschien nicht in der Tool-Liste): Die gemergte
+  Assembly referenzierte extern `Microsoft.Bcl.HashCode 1.0.0.0`, das XrmToolBox weder
+  ausliefert noch per Binding-Redirect abdeckt → `FileNotFoundException` beim Laden.
+  `Microsoft.Bcl.HashCode` wird jetzt **mit in `LookupImportPlus.dll` gemergt**. Die
+  übrigen `System.*`-Abhängigkeiten deckt XrmToolBox per Binding-Redirect ab und bleiben
+  extern. Verifiziert: Plugin lädt gegen den echten XrmToolBox-Assembly-Satz.
+
 ## [0.1.6] – 2026-07-07
 
 ### Behoben
@@ -98,7 +108,8 @@ XrmToolBox-Plugin (WinForms, .NET Framework 4.8) über das Dataverse-**SDK**.
 - 21 Kernlogik-Tests + 15 End-to-End-Tests gegen eine echte Dataverse-Org grün.
 - Release-Build: 0 Warnungen, 0 Fehler.
 
-[Unreleased]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.6...HEAD
+[Unreleased]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.7...HEAD
+[0.1.7]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.3...v0.1.4

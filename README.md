@@ -122,4 +122,8 @@ Lookup-Spalte (kein GUID/Business Key/Suchwert) wird als nicht-blockierender Sta
 geführt — die Zeile bleibt schreibbar, der Lookup ungesetzt. Ein *gefüllter, aber nicht
 auffindbarer* Wert bleibt weiterhin `NotFound` (blockierend).
 
-Offen: optionaler UI-Feinschliff, Version-Bump-Automatik.
+Offen: optionaler UI-Feinschliff.
+
+## Lizenz
+
+[MIT](LICENSE) © 2026 brunsforge.

@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest   # net48 build needs the .NET Framework targeting pack
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build (Release)
+        run: dotnet build src/LookupImportPlus/LookupImportPlus.csproj -c Release
+      - name: Assemble deployment package
+        shell: pwsh
+        run: ./build/package.ps1
+      - name: Upload plugin package
+        uses: actions/upload-artifact@v4
+        with:
+          name: LookupImportPlus-plugin
+          path: deploy/Plugins/*

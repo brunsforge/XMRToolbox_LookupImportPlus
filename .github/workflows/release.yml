@@ -1,0 +1,63 @@
+name: Release
+
+# Publishes the store package to nuget.org via NuGet Trusted Publishing (OIDC) —
+# no stored API key. Triggers on a version tag (v1.2.3) or manual dispatch.
+#
+# One-time setup (see docs/PUBLISHING.md):
+#   • nuget.org → Account → Trusted Publishing: add a policy for package
+#     "LookupImportPlus", repository owner = your GitHub user/org, repository =
+#     LookupImportPlus, workflow = release.yml (environment optional).
+#   • GitHub repo → Settings → Secrets and variables → Actions → Variables:
+#     add NUGET_USER = your nuget.org username.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, e.g. 0.1.1'
+        required: true
+
+permissions:
+  contents: read
+  id-token: write   # required for the OIDC token exchange (Trusted Publishing)
+
+jobs:
+  publish:
+    runs-on: windows-latest   # net48 build requires the .NET Framework targeting pack (Windows)
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Determine version
+        id: ver
+        shell: pwsh
+        run: |
+          if ('${{ github.event_name }}' -eq 'workflow_dispatch') {
+            $v = '${{ inputs.version }}'
+          } else {
+            $v = '${{ github.ref_name }}' -replace '^v', ''
+          }
+          if ($v -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.\-]+)?$') { throw "Invalid version '$v'" }
+          "version=$v" >> $env:GITHUB_OUTPUT
+
+      - name: Build & pack
+        shell: pwsh
+        run: ./build/release.ps1 ${{ steps.ver.outputs.version }}
+
+      - name: Authenticate to NuGet (Trusted Publishing)
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+
+      - name: Push to nuget.org
+        shell: pwsh
+        run: |
+          dotnet nuget push "deploy/LookupImportPlus.${{ steps.ver.outputs.version }}.nupkg" `
+            --source https://api.nuget.org/v3/index.json `
+            --api-key "${{ steps.login.outputs.NUGET_API_KEY }}"

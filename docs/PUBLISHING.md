@@ -9,70 +9,101 @@ nach Paketen mit dem Tag `XrmToolBox Plugin` und listet sie. Du veröffentlichst
 nach **nuget.org**, und XrmToolBox holt es sich von dort.
 
 ```
-dein Rechner ──push──> nuget.org ──scan/index──> XrmToolBox Tool Store ──> Nutzer
+dein Rechner / GitHub Actions ──push──> nuget.org ──scan/index──> Tool Store ──> Nutzer
 ```
 
-## Was du brauchst (einmalig)
+Es gibt zwei Wege zum Push. **Empfohlen** von nuget.org ist inzwischen **Trusted
+Publishing** (ohne gespeicherten API-Key); API-Keys funktionieren weiter, v. a. für den
+lokalen CLI-Push.
 
-1. **nuget.org-Konto** – kostenlos, Anmeldung mit Microsoft- oder GitHub-Konto:
+---
+
+## Weg A — Trusted Publishing (empfohlen, ohne API-Key)
+
+Trusted Publishing veröffentlicht aus **GitHub Actions** per OIDC: der Workflow tauscht
+ein kurzlebiges Token gegen einen temporären Push-Key. Es wird **kein Secret** im Repo
+gespeichert. Der Workflow liegt bereits vor: `.github/workflows/release.yml`.
+
+### Einmalige Einrichtung
+
+1. **nuget.org-Konto** anlegen/anmelden (Microsoft- oder GitHub-Login):
    <https://www.nuget.org>.
-2. **NuGet-API-Key** – auf nuget.org unter *Account → API Keys → Create*:
-   - **Scope:** Push
-   - **Glob Pattern:** `LookupImportPlus` (oder `*`)
-   - **Expiration:** setzen (max. 365 Tage)
-   - Den Key **sicher aufbewahren** – du brauchst ihn für jedes Update wieder.
+2. **Trusted-Publishing-Policy** auf nuget.org anlegen — *Account → Trusted Publishing →
+   Add*:
+   - **Package owner:** dein nuget.org-Benutzer/-Organisation
+   - **Package:** `LookupImportPlus`
+   - **Repository owner:** dein GitHub-Benutzer/-Org (z. B. `brunsforge`)
+   - **Repository:** `LookupImportPlus`
+   - **Workflow file:** `release.yml`
+   - **Environment:** leer lassen (oder eins setzen und im Workflow ergänzen)
+3. **GitHub-Variable** setzen — Repo *Settings → Secrets and variables → Actions →
+   Variables → New variable*:
+   - `NUGET_USER` = dein nuget.org-Benutzername
 
-Ein separates XrmToolBox-Konto ist **nicht** nötig. Kein manueller Review – die Listung
-erfolgt automatisch anhand des Tags.
+> Für die **allererste** Veröffentlichung eines neuen Paket-Namens: nuget.org erlaubt das
+> Anlegen über eine Policy, die auf deinen Owner zeigt. Klappt der erste Trusted-Publish
+> wegen der noch nicht existierenden ID nicht, einmalig lokal per API-Key pushen
+> (Weg B) — danach übernimmt Trusted Publishing alle Updates.
 
-## Erstveröffentlichung
+### Veröffentlichen / Aktualisieren
 
-```powershell
-build\release.ps1 0.1.0
-dotnet nuget push deploy\LookupImportPlus.0.1.0.nupkg -s https://api.nuget.org/v3/index.json -k <API_KEY>
+Einfach eine **Version taggen und pushen**:
+
+```bash
+git tag v0.1.1
+git push origin v0.1.1
 ```
 
-- Der erste Push unter der ID `LookupImportPlus` **reserviert dir diese ID** (an dein
-  Konto gebunden).
-- nuget.org indexiert das Paket in wenigen Minuten; im XrmToolBox-Store erscheint es beim
-  nächsten Refresh (bis zu ~24 h).
+Der Workflow baut, packt und published automatisch. Alternativ **manuell** über
+*GitHub → Actions → Release → Run workflow* mit Eingabe der Version.
 
-## Aktualisieren (neue Version)
+---
 
-Versionen auf nuget.org sind **unveränderlich** – man überschreibt nie, sondern
-veröffentlicht eine **höhere** Version.
+## Weg B — API-Key (lokaler CLI-Push / nicht-unterstützte CI)
+
+1. **API-Key** auf nuget.org erstellen — *Account → API Keys → Create*:
+   - **Scope:** Push · **Glob Pattern:** `LookupImportPlus` · **Expiration** setzen.
+   - Key sicher aufbewahren; für jedes Update wiederverwendbar.
+2. Bauen, packen, pushen:
 
 ```powershell
 build\release.ps1 0.1.1
 dotnet nuget push deploy\LookupImportPlus.0.1.1.nupkg -s https://api.nuget.org/v3/index.json -k <API_KEY>
-git commit -am "Release 0.1.1"  ;  git tag v0.1.1
 ```
 
-`build\release.ps1` setzt die Version an **einer** Stelle (`Directory.Build.props`) – von
-dort erben sowohl die **Assembly-Version** der `LookupImportPlus.dll` als auch die
-**Paket-Version**.
+---
 
-> **Wichtig:** XrmToolBox erkennt Updates, indem es die **Assembly-Version** der
-> installierten DLL mit der im Store vergleicht. Deshalb muss die Version steigen –
-> genau das erledigt das Release-Skript. Nutzer mit älterer Version bekommen dann
-> automatisch „Update verfügbar".
+## Der Update-Mechanismus (gilt für beide Wege)
+
+Versionen auf nuget.org sind **unveränderlich** — man überschreibt nie, sondern
+veröffentlicht eine **höhere** Version. `build\release.ps1` (bzw. der Workflow) setzt die
+Version an **einer** Stelle (`Directory.Build.props`); von dort erben die
+**Assembly-Version** der `LookupImportPlus.dll` und die **Paket-Version**.
+
+> **Wichtig:** XrmToolBox erkennt Updates über die **Assembly-Version** der installierten
+> DLL im Vergleich zum Store. Deshalb muss die Version steigen — genau das macht der
+> Release-Schritt. Nutzer mit älterer Version bekommen dann automatisch
+> „Update verfügbar".
+
+Nach nuget.org-Push dauert Indexierung wenige Minuten; im Store erscheint es beim
+nächsten Refresh (bis zu ~24 h). Keine manuelle Freigabe.
 
 ## SemVer-Leitfaden
 
 - **Patch** (`0.1.0 → 0.1.1`): Bugfix, keine Verhaltensänderung.
 - **Minor** (`0.1.0 → 0.2.0`): neue, abwärtskompatible Funktion.
 - **Major** (`0.1.0 → 1.0.0`): inkompatible Änderung.
-- **Vorabversion:** `1.0.0-beta1` (SemVer-Suffix ist erlaubt).
+- **Vorabversion:** `1.0.0-beta1`.
 
 ## Fehler passiert?
 
-Eine bereits veröffentlichte Version lässt sich auf nuget.org nur **„unlisten"**
-(verstecken), **nicht löschen**. Deshalb vor dem Push immer lokal testen:
-`deploy\Plugins\` in `%AppData%\MscrmTools\XrmToolBox\Plugins` kopieren und ausprobieren
+Eine veröffentlichte Version lässt sich nur **„unlisten"** (verstecken), nicht löschen.
+Deshalb vor dem Push lokal testen: `deploy\Plugins\` nach
+`%AppData%\MscrmTools\XrmToolBox\Plugins` kopieren und ausprobieren
 (siehe [USAGE.md](USAGE.md)). Danach eine korrigierte höhere Version veröffentlichen.
 
 ## Nur intern verteilen (ohne Store)
 
-Du willst gar nicht in den öffentlichen Store? Dann einfach das Zip aus `deploy\`
-weitergeben – der Empfänger entpackt es nach
-`%AppData%\MscrmTools\XrmToolBox\Plugins` und startet XrmToolBox neu. Kein nuget.org nötig.
+Kein öffentlicher Store gewünscht? Dann das Zip aus `deploy\` weitergeben — der Empfänger
+entpackt es nach `%AppData%\MscrmTools\XrmToolBox\Plugins` und startet XrmToolBox neu.
+Kein nuget.org nötig.

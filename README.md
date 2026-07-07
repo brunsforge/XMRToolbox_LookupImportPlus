@@ -92,8 +92,9 @@ build\release.ps1 0.1.1
 # → deploy\LookupImportPlus.0.1.1.nupkg   (Tag "XrmToolBox Plugin")
 ```
 
-Veröffentlichen/Aktualisieren über nuget.org (den Push machst du mit deinem API-Key):
-[docs/PUBLISHING.md](docs/PUBLISHING.md).
+Veröffentlicht wird nach nuget.org (der Store scannt das). Empfohlen per **Trusted
+Publishing** aus GitHub Actions (ohne gespeicherten Key) — ein Tag `vX.Y.Z` startet den
+Release-Workflow. Einrichtung + API-Key-Alternative: [docs/PUBLISHING.md](docs/PUBLISHING.md).
 
 **Manuelle Installation zum Testen:** den Inhalt von `deploy\Plugins\` nach
 `%AppData%\MscrmTools\XrmToolBox\Plugins` kopieren und XrmToolBox neu starten.

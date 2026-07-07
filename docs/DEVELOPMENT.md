@@ -58,8 +58,17 @@ geerbt.
 build\release.ps1 0.1.1     # Version setzen · bauen · deploy\Plugins + Zip + .nupkg
 ```
 
-Danach den Push zum Store selbst ausführen – siehe [PUBLISHING.md](PUBLISHING.md).
-
 - `build/package.ps1` – bündelt nur die Nicht-Host-Assemblies (Plugin + ClosedXML-Closure
   + net48-Polyfills) nach `deploy/Plugins` (+ Zip).
 - `build/pack/LookupImportPlus.Pack.csproj` – `dotnet pack` → Store-`.nupkg`.
+
+### CI/CD (GitHub Actions)
+
+- `.github/workflows/ci.yml` – baut bei Push/PR auf `windows-latest` und lädt das
+  gebündelte Plugin als Artefakt hoch.
+- `.github/workflows/release.yml` – veröffentlicht bei einem Tag `vX.Y.Z` nach nuget.org
+  per **Trusted Publishing** (OIDC, kein gespeicherter Key). Einrichtung und der
+  alternative API-Key-Weg: [PUBLISHING.md](PUBLISHING.md).
+
+Der übliche Release ist damit: `build\release.ps1 X.Y.Z` committen, dann `git tag vX.Y.Z`
+und den Tag pushen – der Workflow erledigt Build, Pack und Push.

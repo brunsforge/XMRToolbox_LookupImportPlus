@@ -6,6 +6,14 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 
 ## [Unreleased]
 
+## [0.1.5] – 2026-07-07
+
+### Behoben
+- **Store-Validierung „Logo Url is not valid":** Das eingebettete `<icon>` wurde
+  entfernt; das Paket nutzt jetzt nur noch `<iconUrl>` — exakt wie die kanonischen
+  MscrmTools-/Cinteros-Plugins. Das eingebettete Icon ließ nuget die Icon-Behandlung
+  überschreiben, was die Tool Library ablehnte.
+
 ## [0.1.4] – 2026-07-07
 
 ### Behoben
@@ -78,7 +86,8 @@ XrmToolBox-Plugin (WinForms, .NET Framework 4.8) über das Dataverse-**SDK**.
 - 21 Kernlogik-Tests + 15 End-to-End-Tests gegen eine echte Dataverse-Org grün.
 - Release-Build: 0 Warnungen, 0 Fehler.
 
-[Unreleased]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.5...HEAD
+[0.1.5]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.1...v0.1.2

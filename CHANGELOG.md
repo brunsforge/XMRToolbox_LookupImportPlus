@@ -6,6 +6,16 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 
 ## [Unreleased]
 
+## [0.1.1] – 2026-07-07
+
+### Hinzugefügt
+- **MIT-Lizenz** und eine auf der nuget.org-Paketseite angezeigte **Readme**
+  (behebt die „License/Readme missing"-Hinweise von 0.1.0).
+
+### Geändert
+- Paketierung warnungsfrei (`NU5100` bewusst unterdrückt; DLLs liegen konstruktions-
+  bedingt unter `Plugins/`). Erste Veröffentlichung über **Trusted Publishing**.
+
 ## [0.1.0] – 2026-07-06
 
 Erste Version: vollständiger Port der Power-Apps-Code-App
@@ -40,5 +50,6 @@ XrmToolBox-Plugin (WinForms, .NET Framework 4.8) über das Dataverse-**SDK**.
 - 21 Kernlogik-Tests + 15 End-to-End-Tests gegen eine echte Dataverse-Org grün.
 - Release-Build: 0 Warnungen, 0 Fehler.
 
-[Unreleased]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/releases/tag/v0.1.0

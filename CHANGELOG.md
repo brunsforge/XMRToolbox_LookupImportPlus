@@ -6,6 +6,16 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 
 ## [Unreleased]
 
+## [0.1.11] – 2026-07-07
+
+### Behoben
+- **Suchfeld/Business-Key/Bedingungen sprangen beim Wiederöffnen zurück** (z. B. auf
+  „accountnumber"). Der Editor schrieb bei einem einzelnen Ziel in die Basiswerte,
+  während Karte **und** Resolver den **Per-Target-Override zuerst** lesen — ein alter
+  Override (etwa nach dem Abwählen eines Ziels bei polymorphen Lookups) überschattete
+  die Eingabe und hätte auch beim Import falsch aufgelöst. Editor schreibt jetzt immer
+  den Override (plus Basis als Fallback); Lesen und Schreiben sind symmetrisch.
+
 ## [0.1.10] – 2026-07-07
 
 ### Geändert

@@ -307,27 +307,27 @@ namespace LookupImportPlus.UI
 
         private ConditionGroup EnsureConditions(string target)
         {
-            // Multi-target lookups store conditions per target override; single-target uses the base group.
-            if (_lk.TargetEntities.Count > 1)
-            {
-                var o = OverrideFor(target, true);
-                return o.Conditions ?? (o.Conditions = ConditionGroup.Empty());
-            }
-            return _lk.Conditions ?? (_lk.Conditions = ConditionGroup.Empty());
+            // Conditions are stored per target override (read override-first everywhere).
+            var o = OverrideFor(target, true);
+            return o.Conditions ?? (o.Conditions = ConditionGroup.Empty());
         }
 
+        // Search / BK / conditions are edited per target and read override-first by both
+        // this card and the resolver. So they must be WRITTEN to the per-target override
+        // too — otherwise a stale override shadows the value and it "reverts" on reopen
+        // (and would resolve wrongly at import time).
         private void SetSearch(string target, string value)
         {
-            if (_lk.TargetEntities.Count > 1) OverrideFor(target, true).SearchAttribute = value;
-            else _lk.SearchAttribute = value;
+            OverrideFor(target, true).SearchAttribute = value;
+            _lk.SearchAttribute = value; // keep base in sync as the fallback default
             if (!string.IsNullOrEmpty(value) && !_lk.CandidateDisplayAttributes.Contains(value))
                 _lk.CandidateDisplayAttributes = new List<string> { value };
         }
 
         private void SetBk(string target, string value)
         {
-            if (_lk.TargetEntities.Count > 1) OverrideFor(target, true).BusinessKeyAttribute = value;
-            else _lk.BusinessKeyAttribute = value;
+            OverrideFor(target, true).BusinessKeyAttribute = value;
+            _lk.BusinessKeyAttribute = value;
         }
 
         private void LoadTargetAttrs(string target, Action<List<AttributeMetadata>> onLoaded)

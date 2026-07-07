@@ -20,6 +20,10 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
   Felder.
 - **Leere Bedingungs-Grids** wirkten „kaputt" (großer grauer Block). Jetzt weißer
   Hintergrund mit sauberem Rahmen.
+- **Gespeicherte View wurde beim Wiederöffnen nicht angezeigt:** Die Auswahl war
+  zwar persistiert (`ExportSource.Reference`), aber `LoadViews()` füllte die
+  Combobox neu, ohne die gespeicherte View wieder zu selektieren — sie wirkte
+  dadurch „nicht gespeichert". Auswahl wird jetzt nach dem Laden wiederhergestellt.
 
 ### Geändert
 - Deutsche Ausgabe: „Konfliktkorb"-Wording durchgängig auf **„Konflikte"** vereinheitlicht.

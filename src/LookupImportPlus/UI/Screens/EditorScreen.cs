@@ -176,7 +176,14 @@ namespace LookupImportPlus.UI.Screens
                     if (e.Error != null) return;
                     _viewCombo.Items.Clear();
                     _viewCombo.DisplayMember = "Name";
-                    foreach (var v in (IReadOnlyList<SavedView>)e.Result) _viewCombo.Items.Add(v);
+                    SavedView toSelect = null;
+                    foreach (var v in (IReadOnlyList<SavedView>)e.Result)
+                    {
+                        _viewCombo.Items.Add(v);
+                        if (v.Id == _config.ExportSource.Reference) toSelect = v;
+                    }
+                    // Restore the previously saved view so it doesn't look unsaved on reopen.
+                    if (toSelect != null) _viewCombo.SelectedItem = toSelect;
                 }
             });
         }

@@ -41,6 +41,9 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
   (DropDownList statt Freitext). Damit lassen sich nur gültige Spalten speichern und
   die Auswahl wird zuverlässig persistiert.
 - Deutsche Ausgabe: „Konfliktkorb"-Wording durchgängig auf **„Konflikte"** vereinheitlicht.
+- **Neues Icon:** Tabellen-Grid → Import-Pfeil → Dataverse-Zylinder mit Lupe (Lookup).
+  Transparenter Hintergrund, eigene Größen für Small (32) und Big (144), plus
+  128er `iconUrl`-Logo. Quelle: `assets/icon-master.png`.
 
 ### Behoben (Tab 4, Forts.)
 - **Suchfeld wurde nicht sauber gespeichert:** Ursache war die Freitext-Combo mit

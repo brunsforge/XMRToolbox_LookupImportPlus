@@ -22,8 +22,8 @@ namespace LookupImportPlus
     [ExportMetadata("BackgroundColor", "White")]
     [ExportMetadata("PrimaryFontColor", "Black")]
     [ExportMetadata("SecondaryFontColor", "DarkGray")]
-    [ExportMetadata("SmallImageBase64", PluginIcons.Base64)]
-    [ExportMetadata("BigImageBase64", PluginIcons.Base64)]
+    [ExportMetadata("SmallImageBase64", PluginIcons.Small)]
+    [ExportMetadata("BigImageBase64", PluginIcons.Big)]
     public class Plugin : PluginBase, IGitHubPlugin, IHelpPlugin
     {
         public override IXrmToolBoxPluginControl GetControl()

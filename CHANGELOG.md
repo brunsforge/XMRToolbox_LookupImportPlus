@@ -6,6 +6,14 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 
 ## [Unreleased]
 
+## [0.1.10] – 2026-07-07
+
+### Geändert
+- **Versions-Bump, damit XrmToolBox das neue Icon neu lädt.** XrmToolBox erkennt eine
+  installierte Plugin-DLL an ihrer **Assembly-Version**; da mehrere 0.1.9.0-Builds
+  dieselbe Version trugen, zeigte der Host weiter das zuvor eingelesene (alte) Icon.
+  0.1.10 enthält ansonsten alle 0.1.9-Änderungen (0.1.9 wurde nie veröffentlicht).
+
 ## [0.1.9] – 2026-07-07
 
 ### Behoben

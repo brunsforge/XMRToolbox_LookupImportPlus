@@ -34,7 +34,10 @@
     <copyright>Copyright (c) 2026 brunsforge</copyright>
     <tags>XrmToolBox Plugins Dataverse Excel Import Lookup</tags>
     <dependencies>
-      <dependency id="XrmToolBox" version="1.2025.1.0" />
+      <!-- Marker for the XrmToolBox Tool Library (no such nuget package exists).
+           Kept at a broadly-compatible net48-era floor so the tool is offered on
+           any recent XrmToolBox, matching how the canonical plugins keep it low. -->
+      <dependency id="XrmToolBox" version="1.2024.1.1" />
     </dependencies>
   </metadata>
   <files>

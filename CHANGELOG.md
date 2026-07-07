@@ -6,6 +6,14 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 
 ## [Unreleased]
 
+## [0.1.2] – 2026-07-07
+
+### Geändert
+- XrmToolBox-Dependency-Untergrenze auf einen breit kompatiblen net48-Wert
+  (`1.2024.1.1`) gesetzt, damit das Tool auf jedem aktuellen XrmToolBox angeboten
+  wird. Erste vollständig Store-konforme Version, die keylos via Trusted
+  Publishing veröffentlicht wird.
+
 ## [0.1.1] – 2026-07-07
 
 ### Hinzugefügt
@@ -50,6 +58,7 @@ XrmToolBox-Plugin (WinForms, .NET Framework 4.8) über das Dataverse-**SDK**.
 - 21 Kernlogik-Tests + 15 End-to-End-Tests gegen eine echte Dataverse-Org grün.
 - Release-Build: 0 Warnungen, 0 Fehler.
 
-[Unreleased]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/releases/tag/v0.1.0

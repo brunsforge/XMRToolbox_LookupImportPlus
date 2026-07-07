@@ -11,13 +11,19 @@ namespace LookupImportPlus
     /// plugin control. Also carries the metadata shown in the tool store /
     /// tool library (name, description, author, links).
     /// </summary>
+    // ALL of these metadata keys are REQUIRED by XrmToolBox's IPluginMetadata view.
+    // MEF's typed metadata composition silently excludes an export that is missing
+    // ANY of them, so the tool would load but never appear in the tool list.
     [Export(typeof(IXrmToolBoxPlugin))]
     [ExportMetadata("Name", "LookupImportPlus")]
     [ExportMetadata("Description",
         "Auditierbarer Excel-Import in Dataverse, bei dem Lookups deterministisch " +
         "aufgeloest oder an einen Menschen eskaliert werden - nie geraten.")]
-    // BackgroundColor / PrimaryFontColor / SmallImageBase64 / BigImageBase64 can
-    // be added later for store branding.
+    [ExportMetadata("BackgroundColor", "White")]
+    [ExportMetadata("PrimaryFontColor", "Black")]
+    [ExportMetadata("SecondaryFontColor", "DarkGray")]
+    [ExportMetadata("SmallImageBase64", PluginIcons.Base64)]
+    [ExportMetadata("BigImageBase64", PluginIcons.Base64)]
     public class Plugin : PluginBase, IGitHubPlugin, IHelpPlugin
     {
         public override IXrmToolBoxPluginControl GetControl()

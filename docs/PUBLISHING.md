@@ -102,6 +102,25 @@ Deshalb vor dem Push lokal testen: `deploy\Plugins\` nach
 `%AppData%\MscrmTools\XrmToolBox\Plugins` kopieren und ausprobieren
 (siehe [USAGE.md](USAGE.md)). Danach eine korrigierte höhere Version veröffentlichen.
 
+## XrmToolBox-Store-Anforderungen (im Paket erfüllt)
+
+Die Tool Library prüft mehr als nur den Tag. Das Paket (`build/pack/LookupImportPlus.nuspec`)
+erfüllt bereits:
+
+- **Tag** `XrmToolBox`,
+- **`iconUrl`** (externes Logo) — Pflicht, sonst wird das Tool abgelehnt,
+- **`<dependency id="XrmToolBox" …>`** — Marker für die Mindest-Host-Version,
+- DLLs unter **`lib\net48\Plugins`**, plus `projectUrl`, `releaseNotes`, Lizenz.
+
+> **Wichtig – Repo muss öffentlich sein:** `iconUrl` und `projectUrl` zeigen auf dein
+> GitHub-Repo (`raw.githubusercontent.com/.../build/pack/icon.png`). Ist das Repo privat,
+> kann XrmToolBox das Logo nicht laden → Ablehnung. Repo öffentlich schalten
+> (GitHub → *Settings → General → Danger Zone → Change visibility → Make public*), oder
+> das Icon auf einer anderen **öffentlichen** URL hosten und `iconUrl` in der nuspec anpassen.
+
+Die Store-Metadaten kamen mit **0.1.1** dazu — die zuerst gepushte **0.1.0** enthält sie
+nicht und würde vom Store abgelehnt. Also 0.1.1 veröffentlichen.
+
 ## Nur intern verteilen (ohne Store)
 
 Kein öffentlicher Store gewünscht? Dann das Zip aus `deploy\` weitergeben — der Empfänger

@@ -1,15 +1,12 @@
 <!--
-  Produces the XrmToolBox Tool Store package (.nupkg).
-
-  It bundles the assemblies assembled by build\package.ps1 into deploy\Plugins
-  (our plugin + non-host dependency closure) under the package's Plugins folder,
-  and tags the package "XrmToolBox Plugin" so the store scanner lists it.
+  Produces the XrmToolBox Tool Store package (.nupkg) from the hand-written
+  LookupImportPlus.nuspec (full control over iconUrl, the XrmToolBox dependency
+  marker, releaseNotes and the lib\net48\Plugins layout the store expects).
 
   Usage:
     build\package.ps1                                   # populate deploy\Plugins
     dotnet pack build\pack\LookupImportPlus.Pack.csproj -c Release -o deploy
-    # → deploy\LookupImportPlus.<version>.nupkg
-    dotnet nuget push deploy\LookupImportPlus.<version>.nupkg -s nuget.org -k <key>
+    # → deploy\LookupImportPlus.<version>.nupkg   (version from Directory.Build.props)
 -->
 <Project Sdk="Microsoft.NET.Sdk">
 
@@ -18,26 +15,15 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <IsPackable>true</IsPackable>
     <EnableDefaultItems>false</EnableDefaultItems>
-    <!-- NU5128: no lib/ + no dependencies (intended for a tool package).
-         NU5100: assemblies live under Plugins/ not lib/ (XrmToolBox extracts them
-         from there; this package is not consumed as a library reference). -->
-    <NoWarn>NU5128;NU5100</NoWarn>
 
-    <!-- Version / Authors / Company come from Directory.Build.props. -->
-    <PackageId>LookupImportPlus</PackageId>
-    <PackageProjectUrl>https://github.com/brunsforge/XMRToolbox_LookupImportPlus</PackageProjectUrl>
-    <PackageTags>XrmToolBox Plugin Dataverse Excel Import Lookup</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Copyright>Copyright (c) 2026 brunsforge</Copyright>
-    <Description>Auditierbarer Excel-Import in Dataverse, bei dem Lookups deterministisch aufgeloest oder an einen Menschen eskaliert werden - nie geraten. Feste Reihenfolge GUID -&gt; Business Key -&gt; Suchfeld, versionierte Konfigurationen, Round-Trip und Audit-Log.</Description>
+    <!-- Pack the hand-written nuspec; inject the single-source version. -->
+    <NuspecFile>LookupImportPlus.nuspec</NuspecFile>
+    <NuspecBasePath>$(MSBuildProjectDirectory)</NuspecBasePath>
+    <NuspecProperties>version=$(Version)</NuspecProperties>
+
+    <!-- NU5048: iconUrl is deprecated on nuget.org, but XrmToolBox REQUIRES it;
+         we also ship an embedded <icon> for nuget.org's own display. -->
+    <NoWarn>NU5048</NoWarn>
   </PropertyGroup>
-
-  <ItemGroup>
-    <!-- Ship the non-host closure assembled by build\package.ps1. -->
-    <Content Include="..\..\deploy\Plugins\*.dll" PackagePath="Plugins" Pack="true" />
-    <!-- nuget.org listing readme (self-contained, no repo-relative links). -->
-    <None Include="PACKAGE.md" Pack="true" PackagePath="README.md" />
-  </ItemGroup>
 
 </Project>

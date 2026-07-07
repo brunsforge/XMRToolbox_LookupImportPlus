@@ -35,9 +35,9 @@
     <tags>XrmToolBox Plugins Dataverse Excel Import Lookup</tags>
     <dependencies>
       <!-- Marker for the XrmToolBox Tool Library (no such nuget package exists).
-           Kept at a broadly-compatible net48-era floor so the tool is offered on
-           any recent XrmToolBox, matching how the canonical plugins keep it low. -->
-      <dependency id="XrmToolBox" version="1.2024.1.1" />
+           Uses the exact host version we build against (= XrmToolBoxPackage), the
+           same value the canonical MscrmTools plugins declare. -->
+      <dependency id="XrmToolBox" version="1.2025.10.74" />
     </dependencies>
   </metadata>
   <files>

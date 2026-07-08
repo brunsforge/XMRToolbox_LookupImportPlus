@@ -1,34 +1,36 @@
 # LookupImportPlus
 
-Ein **XrmToolBox-Plugin** für den auditierbaren Excel-Import in Dataverse, bei dem
-**Lookups deterministisch aufgelöst oder an einen Menschen eskaliert werden — nie
-geraten**.
+An **XrmToolBox plugin** for auditable Excel import into Dataverse, where
+**lookups are resolved deterministically or escalated to a human — never
+guessed**.
 
-## Kernregel
+## Core rule
 
-Feste Matching-Reihenfolge, erster Treffer gewinnt:
+Fixed matching order, first hit wins:
 
 ```
-1) GUID-Spalte  →  2) Business Key  →  3) Suchfeld + Bedingungen
+1) GUID column  →  2) Business Key  →  3) Search field + conditions
 ```
 
-0 Treffer ⇒ Nicht gefunden · genau 1 ⇒ aufgelöst · mehrere ⇒ Mehrdeutig →
-Konfliktstrategie (eskalieren / überspringen / fehlschlagen).
+0 hits ⇒ Not found · exactly 1 ⇒ Resolved · several ⇒ Ambiguous →
+conflict strategy (escalate / skip / fail).
 
-## Funktionen
+## Features
 
-- Versionierte Job-Konfigurationen; jeder Lauf speichert einen unveränderlichen Snapshot.
-- Round-Trip: Konfigurieren → Export (Template/Daten) → in Excel bearbeiten → Import
-  (Hochladen → Schema-Drift-Prüfung → Dry Run → Konflikte lösen → Commit).
-- Polymorphe Lookups (z. B. Kunde = Konto|Kontakt) mit Suchfeld/Business-Key/Bedingungen
-  pro Zieltabelle.
-- Konflikt-Audit: jede Entscheidung wird protokolliert (Regel, Kandidaten, gewählte GUID,
-  Benutzer, Zeitpunkt).
-- Bulk-Writes über `ExecuteMultipleRequest`.
+- Versioned job configurations; every run stores an immutable snapshot.
+- Round-trip: configure → export (template/data) → edit in Excel → import
+  (upload → schema-drift check → dry run → resolve conflicts → commit).
+- Polymorphic lookups (e.g. Customer = Account|Contact) with search field /
+  business key / conditions per target table.
+- Conflict audit: every decision is logged (rule, candidates, chosen GUID,
+  user, timestamp).
+- Bulk writes via `ExecuteMultipleRequest`.
+- Bilingual UI (English/German) — follows the Windows/UI culture, with a
+  manual switch in the sidebar.
 
 ## Installation
 
-In XrmToolBox über die **Tool Library** installieren (Suche „LookupImportPlus") oder die
-DLLs manuell in den `Plugins`-Ordner kopieren.
+Install from the **Tool Library** in XrmToolBox (search for "LookupImportPlus"),
+or copy the DLLs into the `Plugins` folder manually.
 
-Projekt & Doku: <https://github.com/brunsforge/XMRToolbox_LookupImportPlus>
+Project & docs: <https://github.com/brunsforge/XMRToolbox_LookupImportPlus>

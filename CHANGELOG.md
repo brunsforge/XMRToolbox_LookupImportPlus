@@ -6,6 +6,15 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 
 ## [Unreleased]
 
+## [0.1.15] – 2026-07-08
+
+### Geändert
+- **Store-/Paket-Texte auf Englisch vereinheitlicht.** Die nuget-/Tool-Store-Listung ist
+  eine einzige, nicht mehrsprachige Seite → jetzt durchgängig Englisch: nuget
+  `<description>`, `<releaseNotes>` (Verweis auf den Changelog), die Paket-Readme
+  (`PACKAGE.md`) und die In-App-Kachel-Beschreibung (`ExportMetadata("Description")`).
+  Die laufende Plugin-UI bleibt zweisprachig (Umschalter aus 0.1.14).
+
 ## [0.1.14] – 2026-07-08
 
 ### Hinzugefügt

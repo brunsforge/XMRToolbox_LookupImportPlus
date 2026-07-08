@@ -28,11 +28,8 @@
     <license type="expression">MIT</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>Deterministic, auditable Excel import for Dataverse — lookups are never guessed.</summary>
-    <description>Auditierbarer Excel-Import in Dataverse, bei dem Lookups deterministisch aufgeloest oder an einen Menschen eskaliert werden — nie geraten. Feste Reihenfolge GUID -&gt; Business Key -&gt; Suchfeld, versionierte Konfigurationen, Round-Trip (Export/Dry Run/Konflikte/Commit) und Audit-Log. Bulk-Writes ueber ExecuteMultipleRequest.</description>
-    <releaseNotes>
-0.1.1: MIT-Lizenz, Paket-Readme und XrmToolBox-Tool-Library-Metadaten (Icon + Host-Dependency).
-0.1.0: Erste Version — deterministischer, auditierbarer Excel-Import mit sicherer Lookup-Aufloesung.
-    </releaseNotes>
+    <description>Auditable Excel import for Dataverse where lookups are resolved deterministically or escalated to a human — never guessed. Fixed order GUID -&gt; Business Key -&gt; Search field, versioned configurations, a round-trip (export / dry run / conflicts / commit) and an audit log. Bulk writes via ExecuteMultipleRequest. Bilingual UI (English/German).</description>
+    <releaseNotes>See the CHANGELOG for per-version changes: https://github.com/brunsforge/XMRToolbox_LookupImportPlus/blob/master/CHANGELOG.md</releaseNotes>
     <copyright>Copyright (c) 2026 brunsforge</copyright>
     <tags>XrmToolBox Plugins Dataverse Excel Import Lookup</tags>
     <dependencies>

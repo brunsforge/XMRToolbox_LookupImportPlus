@@ -17,8 +17,8 @@ namespace LookupImportPlus
     [Export(typeof(IXrmToolBoxPlugin))]
     [ExportMetadata("Name", "LookupImportPlus")]
     [ExportMetadata("Description",
-        "Auditierbarer Excel-Import in Dataverse, bei dem Lookups deterministisch " +
-        "aufgeloest oder an einen Menschen eskaliert werden - nie geraten.")]
+        "Auditable Excel import for Dataverse where lookups are resolved " +
+        "deterministically or escalated to a human - never guessed.")]
     [ExportMetadata("BackgroundColor", "White")]
     [ExportMetadata("PrimaryFontColor", "Black")]
     [ExportMetadata("SecondaryFontColor", "DarkGray")]

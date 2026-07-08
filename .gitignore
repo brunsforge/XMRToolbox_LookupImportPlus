@@ -33,3 +33,4 @@ deploy/
 
 # Downloaded build tools (ILRepack.exe)
 build/tools/
+.claude/

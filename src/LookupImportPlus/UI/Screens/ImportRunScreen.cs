@@ -162,7 +162,7 @@ namespace LookupImportPlus.UI.Screens
                     if (_config == null && parsed.Manifest != null)
                         _config = Host.Container.GetConfig(parsed.Manifest.ConfigId);
                     if (_config == null)
-                        throw new InvalidOperationException("Keine passende Konfiguration gefunden (Manifest configId unbekannt).");
+                        throw new InvalidOperationException(I18n.T("run.noMatchingConfig"));
 
                     var result = Host.Container.Validation.Validate(_config);
                     validation = new ConfigValidationResultHolder { Result = result };

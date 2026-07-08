@@ -114,6 +114,20 @@ namespace LookupImportPlus.App
             ["conf.audit"] = new Entry("Every decision is logged (lip_resolutiondecision): rule, candidates, chosen GUID, user, timestamp.", "Jede Entscheidung wird protokolliert (lip_resolutiondecision): Regel, Kandidaten, gewählte GUID, Benutzer, Zeitpunkt."),
             ["conf.noRun"] = new Entry("No active import run. Start an import first.", "Kein aktiver Importlauf. Starte zuerst einen Import."),
 
+            // Parser / importer messages (previously hardcoded German).
+            ["parse.noManifest"] = new Entry("No LookupImportPlus manifest found — is this a file created with this app?", "Kein LookupImportPlus-Manifest gefunden – ist das eine mit dieser App erzeugte Datei?"),
+            ["parse.manifestTampered"] = new Entry("Template manifest changed (hash mismatch) — please verify the mapping.", "Template-Manifest verändert (Hash stimmt nicht) – Zuordnung bitte prüfen."),
+            ["parse.manifestUnreadable"] = new Entry("The hidden configuration sheet could not be read.", "Verstecktes Konfigurationsblatt konnte nicht gelesen werden."),
+            ["parse.noDataSheet"] = new Entry("No data sheet found.", "Kein Datenblatt gefunden."),
+            ["parse.missingColumns"] = new Entry("Expected columns missing: {cols}", "Erwartete Spalten fehlen: {cols}"),
+            ["run.lookupEvalFailed"] = new Entry("Lookup '{attr}' could not be evaluated: {error}", "Lookup '{attr}' konnte nicht ausgewertet werden: {error}"),
+            ["run.updateWithoutId"] = new Entry("Update without {col}", "Update ohne {col}"),
+            ["run.duplicateTargetId"] = new Entry("Same target id as row {row}.", "Dieselbe Ziel-ID wie Zeile {row}."),
+            ["run.noMatchingConfig"] = new Entry("No matching configuration found (manifest configId unknown).", "Keine passende Konfiguration gefunden (Manifest configId unbekannt)."),
+
+            // Language switcher.
+            ["shell.language"] = new Entry("Language", "Sprache"),
+
             ["res.title"] = new Entry("Resolve conflict", "Konflikt auflösen"),
             ["res.sourceValue"] = new Entry("Source value", "Quellwert"),
             ["res.targetField"] = new Entry("Target field", "Zielfeld"),

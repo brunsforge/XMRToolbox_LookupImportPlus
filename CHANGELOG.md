@@ -6,6 +6,20 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 
 ## [Unreleased]
 
+## [0.1.14] – 2026-07-08
+
+### Hinzugefügt
+- **Manueller Sprachumschalter (EN/DE)** in der Seitenleiste. Die Auswahl wird gespeichert
+  (`language.txt` im XrmToolBox-Settings-Ordner) und die gesamte UI sofort neu gerendert.
+  Standard bleibt die automatische Wahl nach Windows-/UI-Kultur (Deutsch bei deutscher
+  Kultur, sonst Englisch).
+
+### Geändert
+- **Vollständige englische UI:** Die restlichen hartcodierten deutschen Parser- und
+  Import-Meldungen (z. B. „Kein Datenblatt gefunden", „Update ohne lip__recordid",
+  „Template-Manifest verändert …") laufen jetzt über `I18n` (EN+DE). Im englischen Modus
+  ist damit auch der Import-/Parser-Teil durchgehend englisch.
+
 ## [0.1.13] – 2026-07-08
 
 ### Behoben

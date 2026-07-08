@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using LookupImportPlus.App;
 using LookupImportPlus.Data;
 using LookupImportPlus.Domain;
 using LookupImportPlus.Services.Excel;
@@ -88,7 +89,7 @@ namespace LookupImportPlus.Services
                                 SourceValue = ReadString(GetVal(raw, lk.VisibleColumn)),
                                 Status = LookupResolutionStatus.NotFound
                             };
-                            messages.Add($"Lookup '{lk.LookupAttribute}' konnte nicht ausgewertet werden: {e.Message}");
+                            messages.Add(I18n.T("run.lookupEvalFailed", new Dictionary<string, object> { ["attr"] = lk.LookupAttribute, ["error"] = e.Message }));
                         }
                         resolveCache[key] = res;
                     }
@@ -197,7 +198,7 @@ namespace LookupImportPlus.Services
 
                         if (config.Operation == OperationType.Update && string.IsNullOrEmpty(row.TargetRecordId))
                         {
-                            row.WriteResult = new WriteResult { Success = false, Error = $"Update ohne {TemplateConstants.RecordIdColumn}", HttpStatus = 400 };
+                            row.WriteResult = new WriteResult { Success = false, Error = I18n.T("run.updateWithoutId", "col", TemplateConstants.RecordIdColumn), HttpStatus = 400 };
                             row.Status = RowStatus.CommitFailed;
                             done++; onProgress?.Invoke(done, total);
                             continue;
@@ -365,7 +366,7 @@ namespace LookupImportPlus.Services
                 if (seen.TryGetValue(row.TargetRecordId, out var prev))
                 {
                     row.Status = RowStatus.DuplicateInFile;
-                    row.Messages.Add($"Dieselbe Ziel-ID wie Zeile {prev.RowNumber}.");
+                    row.Messages.Add(I18n.T("run.duplicateTargetId", "row", prev.RowNumber));
                 }
                 else
                 {

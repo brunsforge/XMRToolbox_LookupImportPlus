@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using ClosedXML.Excel;
+using LookupImportPlus.App;
 using LookupImportPlus.Domain;
 
 namespace LookupImportPlus.Services.Excel
@@ -52,16 +53,16 @@ namespace LookupImportPlus.Services.Excel
                         result.Manifest = Json.Deserialize<TemplateManifest>(raw);
                         result.ManifestValid = ManifestHash.HashManifest(result.Manifest) == result.Manifest.Hash;
                         if (!result.ManifestValid)
-                            result.Warnings.Add("Template-Manifest verändert (Hash stimmt nicht) – Zuordnung bitte prüfen.");
+                            result.Warnings.Add(I18n.T("parse.manifestTampered"));
                     }
                     catch
                     {
-                        result.Warnings.Add("Verstecktes Konfigurationsblatt konnte nicht gelesen werden.");
+                        result.Warnings.Add(I18n.T("parse.manifestUnreadable"));
                     }
                 }
                 else
                 {
-                    result.Warnings.Add("Kein LookupImportPlus-Manifest gefunden – ist das eine mit dieser App erzeugte Datei?");
+                    result.Warnings.Add(I18n.T("parse.noManifest"));
                 }
 
                 // ── data sheet ──
@@ -71,7 +72,7 @@ namespace LookupImportPlus.Services.Excel
 
                 if (ws == null)
                 {
-                    result.Warnings.Add("Kein Datenblatt gefunden.");
+                    result.Warnings.Add(I18n.T("parse.noDataSheet"));
                     return result;
                 }
 
@@ -108,7 +109,7 @@ namespace LookupImportPlus.Services.Excel
                         .Where(h => !result.Headers.Contains(h))
                         .ToList();
                     if (missing.Count > 0)
-                        result.Warnings.Add($"Erwartete Spalten fehlen: {string.Join(", ", missing)}.");
+                        result.Warnings.Add(I18n.T("parse.missingColumns", "cols", string.Join(", ", missing)));
                 }
             }
             return result;

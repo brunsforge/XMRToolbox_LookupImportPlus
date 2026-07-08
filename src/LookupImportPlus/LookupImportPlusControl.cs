@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using LookupImportPlus.App;
 using LookupImportPlus.Data;
@@ -23,15 +24,91 @@ namespace LookupImportPlus
         private ListView _nav;
         private Panel _content;
         private Label _statusBadge;
+        private ComboBox _langCombo;
         private NotifyIcon _notify;
 
         private ScreenControlBase _current;
+        private ScreenName? _currentScreen;
+        private object _currentParams;
+        private bool _connected;
+        private string _connName;
 
         public new AppContainer Container { get; private set; }
 
         public LookupImportPlusControl()
         {
+            LoadLanguagePreference();
             BuildShell();
+        }
+
+        // ── Language ─────────────────────────────────────────────
+        private static string LangFilePath =>
+            Path.Combine(Paths.SettingsPath, "LookupImportPlus", "language.txt");
+
+        private static void LoadLanguagePreference()
+        {
+            try
+            {
+                if (!File.Exists(LangFilePath)) return; // no saved choice → keep culture default
+                var v = File.ReadAllText(LangFilePath).Trim().ToLowerInvariant();
+                if (v == "de") I18n.Current = Lang.De;
+                else if (v == "en") I18n.Current = Lang.En;
+            }
+            catch { /* fall back to culture default */ }
+        }
+
+        private static void SaveLanguagePreference()
+        {
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(LangFilePath));
+                File.WriteAllText(LangFilePath, I18n.Current == Lang.De ? "de" : "en");
+            }
+            catch { /* non-fatal */ }
+        }
+
+        private sealed class LangItem
+        {
+            public Lang Lang;
+            private readonly string _text;
+            public LangItem(Lang lang, string text) { Lang = lang; _text = text; }
+            public override string ToString() => _text;
+        }
+
+        private void OnLangChanged(object sender, EventArgs e)
+        {
+            if (_langCombo.SelectedItem is LangItem li && li.Lang != I18n.Current)
+            {
+                I18n.Current = li.Lang;
+                SaveLanguagePreference();
+                ApplyLanguage();
+            }
+        }
+
+        /// <summary>Re-render nav, status and the current screen in the new language.</summary>
+        private void ApplyLanguage()
+        {
+            foreach (ListViewItem item in _nav.Items)
+                if (item.Tag is ScreenName s) item.Text = NavText(s);
+
+            _statusBadge.Text = _connected
+                ? I18n.T("shell.live") + (string.IsNullOrEmpty(_connName) ? "" : " · " + _connName)
+                : I18n.T("shell.offline");
+
+            if (_connected && _currentScreen.HasValue) Navigate(_currentScreen.Value, _currentParams);
+            else ShowNotConnected();
+        }
+
+        private static string NavText(ScreenName s)
+        {
+            switch (s)
+            {
+                case ScreenName.Configs: return I18n.T("nav.configs");
+                case ScreenName.ImportRun: return I18n.T("nav.importruns");
+                case ScreenName.Conflicts: return I18n.T("nav.conflicts");
+                case ScreenName.History: return I18n.T("nav.history");
+                default: return s.ToString();
+            }
         }
 
         // ── IScreenHost ──────────────────────────────────────────
@@ -47,6 +124,8 @@ namespace LookupImportPlus
             _content.ResumeLayout();
             previous?.Dispose();
             _current = control;
+            _currentScreen = screen;
+            _currentParams = parameters;
 
             HighlightNav(screen);
             control.OnActivated(parameters);
@@ -102,8 +181,25 @@ namespace LookupImportPlus
                 ForeColor = UiTheme.Muted
             };
 
+            var langBar = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Bottom,
+                Height = 32,
+                FlowDirection = FlowDirection.LeftToRight,
+                WrapContents = false,
+                Padding = new Padding(6, 4, 0, 0)
+            };
+            langBar.Controls.Add(new Label { Text = I18n.T("shell.language") + ":", AutoSize = true, Padding = new Padding(0, 4, 4, 0), ForeColor = UiTheme.Muted });
+            _langCombo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 110 };
+            _langCombo.Items.Add(new LangItem(Lang.En, "English"));
+            _langCombo.Items.Add(new LangItem(Lang.De, "Deutsch"));
+            _langCombo.SelectedIndex = I18n.Current == Lang.De ? 1 : 0;
+            _langCombo.SelectedIndexChanged += OnLangChanged;
+            langBar.Controls.Add(_langCombo);
+
             var navHost = new Panel { Dock = DockStyle.Fill };
             navHost.Controls.Add(_nav);
+            navHost.Controls.Add(langBar);
             navHost.Controls.Add(_statusBadge);
 
             _content = new Panel { Dock = DockStyle.Fill, Padding = new Padding(16) };
@@ -168,11 +264,13 @@ namespace LookupImportPlus
             object parameter = null)
         {
             base.UpdateConnection(newService, detail, actionName, parameter);
-            if (newService == null) { ShowNotConnected(); return; }
+            if (newService == null) { _connected = false; _connName = null; ShowNotConnected(); return; }
 
             var ctx = new DataverseContext(newService, detail?.WebApplicationUrl);
             Container = new AppContainer(ctx, Paths.SettingsPath);
 
+            _connected = true;
+            _connName = detail?.ConnectionName;
             _statusBadge.Text = detail != null
                 ? I18n.T("shell.live") + " · " + detail.ConnectionName
                 : I18n.T("shell.offline");

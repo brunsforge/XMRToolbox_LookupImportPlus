@@ -6,6 +6,17 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 
 ## [Unreleased]
 
+## [0.1.16] – 2026-07-08
+
+### Behoben
+- **Altes Logo im Tool Store / in der Tool Library.** Der XrmToolBox-Store und
+  xrmtoolbox.com laden das Tool-Logo vom NuGet-Flatcontainer-Endpunkt
+  (`.../<version>/icon`), der das **eingebettete** Paket-Icon ausliefert — nicht die
+  `iconUrl`. Das Paket bettete bisher kein Icon ein, daher zeigte der Store das alte,
+  von NuGet gecachte Logo. Das neue Icon wird jetzt als `<icon>` **ins Paket
+  eingebettet** (iconUrl bleibt als Fallback). Ab dieser Version zieht der Store das
+  überarbeitete Logo.
+
 ## [0.1.15] – 2026-07-08
 
 ### Geändert

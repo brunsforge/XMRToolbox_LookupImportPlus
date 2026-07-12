@@ -20,9 +20,11 @@
     <authors>brunsforge</authors>
     <owners>brunsforge</owners>
     <projectUrl>https://github.com/brunsforge/XMRToolbox_LookupImportPlus</projectUrl>
-    <!-- iconUrl only (no embedded <icon>) — matches the canonical MscrmTools /
-         Cinteros plugins. An embedded icon makes nuget rewrite/override the icon
-         handling, which the Tool Library rejected ("Logo Url is not valid"). -->
+    <!-- Embedded icon: the XrmToolBox Tool Library and xrmtoolbox.com read the tool
+         logo from NuGet's flatcontainer icon endpoint
+         (api.nuget.org/v3-flatcontainer/<id>/<version>/icon), which serves the
+         EMBEDDED <icon> — not iconUrl. iconUrl (deprecated) is kept as a fallback. -->
+    <icon>images\icon.png</icon>
     <iconUrl>https://raw.githubusercontent.com/brunsforge/XMRToolbox_LookupImportPlus/master/build/pack/icon.png</iconUrl>
     <readme>README.md</readme>
     <license type="expression">MIT</license>
@@ -42,5 +44,6 @@
   <files>
     <file src="..\..\deploy\Plugins\*.dll" target="lib\net48\Plugins" />
     <file src="PACKAGE.md" target="README.md" />
+    <file src="icon.png" target="images\icon.png" />
   </files>
 </package>
